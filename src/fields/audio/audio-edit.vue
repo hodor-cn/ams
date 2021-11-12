@@ -7,7 +7,8 @@
                :style="field.style"
                v-on="on"
                v-bind="field.props">
-        <el-button size="small"
+        <el-button :size="field.props['size']"
+                   :disabled="field.props['disabled']"
                    type="primary">{{ field.props && field.props['button-label'] || '点击上传'}}</el-button>
         <div slot="tip"
              class="el-upload__tip"
@@ -33,18 +34,33 @@ export default {
                     this.$message.error('上传音频大小不能超过 ' + (maxSizeInKB / 1024).toFixed(2) + 'MB!');
                     return reject(); // eslint-disable-line prefer-promise-reject-errors
                 }
+                const props = this.field.props || {};
+                if (typeof props['before-upload'] === 'function') {
+                    resolve(props['before-upload'](file));
+                }
                 resolve();
             });
         },
         handleUploadSuccess(res, file) {
             console.log('handleUploadSuccess', res, file);
+            const props = this.field.props || {};
             // todo: 预览、上传进度
-            const successCode = this.$block.getConfig('resource.api.successCode');
+            let successCode;
+            if (props && typeof props.successCode !== 'undefined') {
+                successCode = props.successCode;
+            } else {
+                successCode = this.$block.getConfig('resource.api.successCode');
+            }
             if (res.code === successCode) {
                 const successUrlKey = this.field.successUrlKey || 'url';
-                if (res.data && res.data[successUrlKey]) {
-                    this.localValue = this.field.get(res.data[successUrlKey], this.field);
+                if (res.data) {
+                    this.localValue = this.field.get(res.data[successUrlKey] || res.data, this.field);
                 }
+                if (typeof props['on-success'] === 'function') {
+                    props['on-success'](res, file);
+                }
+            } else if (typeof props['on-error'] === 'function') {
+                props['on-error'](res, file);
             } else {
                 this.$message.error(`${res.msg}(${res.code})`);
             }

@@ -1,5 +1,6 @@
 <template>
         <div
+            v-loading = "loading"
             v-if="ready"
             :class="'ams-block-' + type" :style="block.style">
 
@@ -19,7 +20,6 @@ import 'echarts/theme/macarons.js';
 
 // window暴露echarts
 window.echarts = echarts;
-
 export default {
     mixins: [ams.mixins.blockMixin],
     data() {
@@ -30,11 +30,23 @@ export default {
         };
     },
     watch: {
-        data(val, oldVal) {
-            // 每当data改变时 重新计算option
-            if (val && this.chartDom) {
-                this.setChartOption();
+        data: {
+            deep: true,
+            handler(val, oldVal) {
+                // 每当data改变时 重新计算option
+                if (val && this.chartDom) {
+                    this.setChartOption();
+                }
             }
+        }
+    },
+    created() {
+        const autoResizeRender = ams.configs && ams.configs['block_chart'] && ams.configs['block_chart']['resize-render'];
+        if (autoResizeRender !== false) {
+            const { addEvent, debounce } = ams.utils;
+            addEvent(window, 'resize', debounce(() => {
+                this.chartDom && this.chartDom.resize();
+            }, 100));
         }
     },
     updated() {
@@ -44,9 +56,18 @@ export default {
             // entire view has been re-rendered
             if (this.$refs.chart && !this.chartDom) {
                 // 初始化
-                const globalTheme = this.configs && this.configs.charts && this.configs.charts.theme;
+                const globalTheme = ams.configs && ams.configs['block_chart'] && ams.configs['block_chart'].theme;
                 const themeName = this.block.theme || globalTheme || 'macarons';
                 this.chartDom = echarts.init(this.$refs.chart, themeName);
+                const block = this.block;
+                if (block && block.props && block.props.events) {
+                    let o = block.props.events;
+                    Object.keys(o).forEach(eventName => {
+                        if (ams.utils.getType(o[eventName] === 'function')) {
+                            this.chartDom.on(eventName, o[eventName]);
+                        }
+                    });
+                }
                 this.chartDom.showLoading();
                 this.setChartOption();
             }
@@ -54,14 +75,14 @@ export default {
     },
     methods: {
         setBlockData(data) {
-            // console.log('---setBlockData---', data);
             // 深拷贝，接口返回数据，避免覆盖
             let dataTmp = this.deepExtend(this.data, data);
 
-            // 重置data对象数据指引，触发watch-data调用
-            this.data = JSON.parse(JSON.stringify(dataTmp));
+            // 重置data对象数据指引，触发watch-data调用，在此处直接使用this.setChartOption会死循环
+            this.data = this.deepExtendAndHandle({}, dataTmp);
         },
         deepExtend(destination, source) {
+            // 数据深拷贝，与ams.utils.deepExtend不同在于数组的处理，数组直接覆盖
             const type = ams.utils.getType(source);
             if (type === 'object' || type === 'array') {
                 for (let property in source) {
@@ -85,7 +106,8 @@ export default {
             return destination;
         },
         async setChartOption() {
-            if (this.block.options) {
+            if (this.block.options && this.chartDom) {
+                // 1、数据处理
                 let options = this.deepExtendAndHandle({}, this.block.options);
                 let series = options.series;
                 let chartType = options.type;
@@ -95,7 +117,7 @@ export default {
                     options.yAxis = options.yAxis || {};
                 }
 
-                // 遍历series 添加默认type
+                // 2、遍历series 添加默认type
                 if (series) {
                     series.forEach(item => {
                         item.type = item.type ? item.type : chartType;
@@ -108,9 +130,18 @@ export default {
                         // }
                     });
                 }
-                // console.log('---options---', options);
+                // 3、设置图表options
                 this.chartDom.setOption(options);
                 this.chartDom.hideLoading();
+                if (options.watermark) {
+                    const wmOptions = ams.utils.getType(options.watermark) === 'object' ? options.watermark : {};
+                    ams.utils.watermark(Object.assign({
+                        container: this.chartDom._dom,
+                        width: '200px',
+                        height: '150px',
+                        uid: this._uid
+                    }, wmOptions || {}));
+                }
             }
         },
         // 深度拷贝options各个值, 并处理'data.xxx'这类数据

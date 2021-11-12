@@ -1,8 +1,13 @@
 import ams from '@ams-team/ams';
+import { prefix } from '@/utils';
 
 ams.block('union', {
     resources: {
-        'union': {
+        union: {
+            api: {
+                prefix: prefix,
+                update: 'update'
+            },
             fields: {
                 union: {
                     type: 'union',
@@ -25,11 +30,11 @@ ams.block('union', {
     },
     blocks: {
         unionEdit: {
+            ctx: 'edit',
             type: 'form',
             resource: 'union',
-            ctx: 'edit',
             data: {
-                union: '1548413724000,1548417324000',
+                union: '1548413724000,1548417324000'
             },
             operations: {
                 update: {
@@ -42,11 +47,11 @@ ams.block('union', {
             }
         },
         unionView: {
-            type: 'form',
             ctx: 'view',
+            type: 'form',
             resource: 'union',
             data: {
-                union: '1548413724000,1548417324000',
+                union: '1548413724000,1548417324000'
             }
         }
     }

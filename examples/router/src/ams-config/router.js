@@ -1,13 +1,44 @@
 import ams from '@ams-team/ams';
 import outsideFile from './cases-sence/outside-file';
-import { prefix } from '@/utils';
+import { prefix, configCodePrefix } from '@/utils';
 
 ams.block('router', {
     type: 'router',
     data: {
-        roles: ['admin']
+        roles: ['admin'],
+        logo: '//h5rsc.vipstatic.com/ams/ams-logo2.png?20191105', // 系统logo（只有使用vipshop的UI主题才会显示）
+        logoPath: '/',
+        title: 'AMS在线示例', // 系统标题（只有使用vipshop的UI主题才会显示）
+        userImg: '', // 用户头像（如果头像为空，则用默认头像）
+        userName: '' // 用户名字（如果名字为空则不展示用户信息模块）
+    },
+    events: {
+        init: '@getUsers'
+    },
+    actions: {
+        async getUsers() {
+            const res = await ams.request({
+                url: `${prefix}getUser`,
+                method: 'GET'
+            });
+            if (
+                res.data &&
+                res.data.code === 0
+            ) {
+                this.data.userImg = res.data.data.userImg;
+                this.data.userName = res.data.data.userName;
+            } else {
+                this.$message.error(`${res.data.msg}(${res.data.code})`);
+            }
+        },
+        // 退出登录函数
+        loginOut() {
+            alert('你点击了退出按钮');
+            location.href = '//vip.com/user/logout';
+        }
     },
     router: {
+        // keepAlive: true, // 设置为true的话，所有菜单都会keepAlive
         // mode: 'history',
         // base: '/app/', // 要在history下才会发挥作用
         // showMenu: false,   // 隐藏所有菜单配置项，默认为true
@@ -16,6 +47,8 @@ ams.block('router', {
         // backgroundColor: '#304156', // 菜单的背景色（仅支持 hex 格式），默认值：#304156
         // textColor: '#bfcbd9', // 菜单的文字颜色（仅支持 hex 格式），默认值：#bfcbd9
         // activeTextColor: '#409EFF', // 菜单的文字颜色（仅支持 hex 格式），默认值：#409EFF
+        // defaultBreadcrumb: false, // 默认为true，会把首个route作为默认首页加到所有面包屑，设置为false禁用此行为， 0.7.5+支持
+        // showBreadcrumb: false, // 默认为true，是否显示面包屑
         routes: [
             {
                 name: '首页',
@@ -25,6 +58,9 @@ ams.block('router', {
                 // redirect: '/list',
                 meta: {
                     icon: 'el-icon-menu'
+                },
+                tooltip: {
+                    content: '首页提示文字'
                 }
             },
             {
@@ -103,6 +139,11 @@ ams.block('router', {
                         block: 'union'
                     },
                     {
+                        name: '对象字段',
+                        path: 'object',
+                        block: 'object'
+                    },
+                    {
                         name: '原始文件上传',
                         path: 'originfile',
                         block: 'originfile'
@@ -111,6 +152,11 @@ ams.block('router', {
                         name: '图片上传',
                         path: 'image',
                         block: 'image'
+                    },
+                    {
+                        name: '视频上传',
+                        path: 'video',
+                        block: 'video'
                     },
                     {
                         name: '树形控件',
@@ -131,6 +177,11 @@ ams.block('router', {
                         name: '级联选择',
                         path: 'cascader',
                         block: 'cascader'
+                    },
+                    {
+                        name: 'Select选择器',
+                        path: 'select',
+                        block: 'select'
                     }
                 ]
             },
@@ -175,6 +226,21 @@ ams.block('router', {
                                 name: '列表拖拽',
                                 path: 'list-drag',
                                 block: 'list-drag'
+                            },
+                            {
+                                name: '字段处理',
+                                path: 'list-field-convert',
+                                block: 'list-field-convert'
+                            },
+                            {
+                                name: '前端分页',
+                                path: 'list-simulate',
+                                block: 'list-simulate'
+                            },
+                            {
+                                name: 'tab中的list',
+                                path: 'list-tab',
+                                block: 'list-tab'
                             }
                         ]
                     },
@@ -229,6 +295,11 @@ ams.block('router', {
                         block: 'dragimage'
                     },
                     {
+                        name: '拖拽图片框（上下）',
+                        path: 'dragimage-updown',
+                        block: 'dragimage-updown'
+                    },
+                    {
                         name: '折叠面板',
                         path: 'collapse',
                         block: 'collapse'
@@ -237,6 +308,11 @@ ams.block('router', {
                         name: '步骤',
                         path: 'steps',
                         block: 'steps'
+                    },
+                    {
+                        name: '标题',
+                        path: 'title',
+                        block: 'title'
                     },
                     {
                         name: '卡片',
@@ -284,9 +360,29 @@ ams.block('router', {
                         block: 'popover'
                     },
                     {
+                        name: '气泡确认框',
+                        path: 'popconfirm',
+                        block: 'popconfirm'
+                    },
+                    {
+                        name: '抽屉',
+                        path: 'drawer',
+                        block: 'drawer'
+                    },
+                    {
                         name: 'bct定制进度条',
                         path: 'bct-progress',
                         block: 'bct-progress'
+                    },
+                    {
+                        name: 'Alert告警',
+                        path: 'alert',
+                        block: 'alert'
+                    },
+                    {
+                        name: '时间线',
+                        path: 'timeline',
+                        block: 'timeline'
                     }
                 ]
             },
@@ -299,18 +395,13 @@ ams.block('router', {
                 },
                 children: [
                     {
-                        name: '远程select',
-                        path: 'select',
-                        block: 'remote-select'
-                    },
-                    {
                         name: 'OA搜索示例',
-                        path: 'select-oa',
+                        path: 'remote-oa',
                         block: 'remote-oa'
                     },
                     {
                         name: 'array & object',
-                        path: 'array',
+                        path: 'array-object',
                         block: 'array-object'
                     },
                     {
@@ -381,12 +472,20 @@ ams.block('router', {
                 ]
             },
             {
-                name: '外链',
+                name: 'Github',
                 meta: {
                     icon: 'el-icon-star-off'
                 },
+                path: 'https://github.com/vipshop/ams',
+                target: '_blank'
+            },
+            {
+                name: '文档',
+                meta: {
+                    icon: 'ams-icon-help-center'
+                },
                 path: 'https://vipshop.github.io/ams/',
-                target: '_self'
+                target: '_blank'
             },
             {
                 name: '跳404',
@@ -404,34 +503,105 @@ ams.block('router', {
             }
         ]
     },
+    on: {
+        beforeEach: function(to, from, next) {
+            let href = '';
+            switch (to.meta.path) {
+                case '/':
+                    href = '/index.js';
+                    break;
+                default:
+                    href = to.meta.path + '.js';
+                    break;
+            }
+            if (ams.$blocks.configCodeBlock) {
+                ams.$blocks.configCodeBlock.block.props.href = configCodePrefix + href;
+            } else {
+                ams.blocks.configCodeBlock.props.href = configCodePrefix + href;
+            }
+            next();
+        }
+    },
     blocks: {
-        menuTop: {
-            type: 'component',
-            options: {
-                is: 'img'
-            },
-            style: {
-                width: '80px',
-                height: '80px',
-                margin: '20px auto 0'
-            },
-            props: {
-                src: '//h5rsc.vipstatic.com/ams/ams-logo.png'
-            },
-            slot: 'menuTop'
-        },
         menuBottom: {
             type: 'component',
             options: {
                 is: 'div',
-                text: 'www.vip.com'
+                text: '@2019 www.vip.com'
             },
             style: {
                 color: '#777',
-                padding: '30px 10px 15px',
-                'font-size': '12px'
+                padding: '50px 10px 15px',
+                'font-size': '12px',
+                'text-align': 'center'
             },
             slot: 'menuBottom'
+        },
+        navRightNav: {
+            slot: 'nav-left',
+            type: 'dropdown',
+            style: {
+                float: 'right',
+                'padding-left': '15px'
+            },
+            props: {
+                trigger: 'click'
+            },
+            options: {
+                menu: '点击触发下拉',
+                menuItems: [{
+                    text: '黄金糕',
+                    props: {
+                        command: 'a',
+                        icon: 'el-icon-plus'
+                    }
+                }, {
+                    text: '狮子头',
+                    props: {
+                        command: 'b',
+                        icon: 'el-icon-circle-plus'
+                    }
+                }, {
+                    text: '螺蛳粉',
+                    props: {
+                        command: 'c',
+                        icon: 'el-icon-circle-plus-outline'
+                    }
+                }]
+            },
+            on: {
+                command: function(e) {
+                    this.$message('click on item ' + e);
+                }
+            }
+        },
+        configCodeBlock: {
+            type: 'component',
+            options: {
+                is: 'a'
+            },
+            slot: 'nav-left',
+            style: {
+                position: 'fixed',
+                right: '0px',
+                top: '75px',
+                'z-index': 100,
+                width: '50px',
+                height: '32px',
+                'line-height': '32px',
+                border: '1px solid #eee',
+                'border-radius': '32px 0 0 32px',
+                'padding-left': '15px',
+                'box-shadow': '-2px 2px 5px 0 #eee',
+                color: '#333',
+                backgroundColor: '#fff'
+            },
+            props: {
+                title: '查看配置',
+                class: 'ams-icon-code',
+                target: '_blank',
+                href: ''
+            }
         }
     }
 });

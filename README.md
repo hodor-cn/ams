@@ -1,11 +1,14 @@
-<p align="center"><a href="https://vipshop.github.io/ams/" target="_blank" rel="noopener noreferrer"><img width="140" src="https://h5rsc.vipstatic.com/ams/ams-logo.png" alt="AMS logo"></a></p>
+<p align="center"><a href="https://vipshop.github.io/ams/" target="_blank" rel="noopener noreferrer"><img width="140" src="https://h5rsc.vipstatic.com/ams/ams-logo2.png" alt="AMS logo"></a></p>
 
 ## AMS
 
-> AMS (admin materiel system)，管理后台物料系统。
+> AMS (admin material system)，管理后台物料系统。
 
 AMS是基于 [Vue.js](https://github.com/vuejs/vue) 和 [Element组件库](https://github.com/ElemeFE/element)、通过JSON配置来快速搭建管理后台的一整套解决方案
 
+- [使用文档](https://vipshop.github.io/ams/)
+- [演示示例](https://vipshop.github.io/ams/example/#/)
+- [FAQ相关](./FAQ.md)
 
 ## npm 安装
 
@@ -52,6 +55,12 @@ ams.resource('demoRes', { // ”demoRes“为资源名
 })
 ```
 
+### packages目录本地开发调试
+
+```sh
+npm run dev
+```
+
 ### 第二步，注册区块
 
 
@@ -82,15 +91,30 @@ ams.render('demo')
 
 尝试AMS的最简单的方式是使用[JSRUN上的官方入门Demo](http://jsrun.net/sehKp/edit?utm_source=website)。你可以在浏览器新标签页中打开它，跟着例子学习一些基础用法。
 
-## 相关链接
+### packages本地开发调试
 
-- [文档与教程](https://vipshop.github.io/ams/)
-- [FAQ](./FAQ.md)
-- [官方入门Demo](http://jsrun.net/sehKp/edit?utm_source=website)
+```
+npm run dev
+```
+
+
 
 ## 浏览器支持
 
 现代浏览器 及 Internet Explorer 10+。
+
+## 1.0版本规划
+
+> 通过 `1.0` 版本调整，希望把ams的配置的更加精简，希望解决一些设计不规范或者在实践中反馈不合理的地方，解决已知的痛点，敬请期待。[点击查看1.0版本规划详情>>](https://github.com/vipshop/ams/milestone/1)
+
+## 本地开发
+
+```bash
+npm install
+npm run build
+npm run dev
+```
+
 
 ## 开发团队
 
@@ -104,10 +128,13 @@ ams.render('demo')
 vip.com以外的开发者：
 
 + [hodor-cn](https://github.com/hodor-cn)
++ [ly525](https://github.com/ly525)
 
 ## 社区互助
 
-官方微信群： 请先搜索添加群主 `viptech128`（备注 `AMS`），欢迎加入讨论交流！
+<img src="https://vipshop.github.io/ams/index/footer-02.png">
+
+加入技术支持群，请扫二维码加“唯技术”老师咨询（添加时请备注“AMS”）
 
 ## LICENSE
 [Apache 2.0](LICENSE)

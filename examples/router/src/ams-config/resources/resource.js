@@ -1,18 +1,34 @@
 import ams from '@ams-team/ams';
 import { prefix } from '@/utils';
 
-// http://localhost:9526/examples/router/mock/list.json
+// http://localhost:9526/examples/router/mock/list
 
 ams.resource('resource', {
     key: 'id',
     api: {
-        // prefix: 'https://easy-mock.com/mock/5a0023effbbb09615044cb82/',
         prefix: prefix,
         create: 'create',
         update: 'update',
         read: 'read',
         delete: 'delete',
-        list: 'list'
+        // list: 'list'
+        list: {
+            path: 'list',
+            method: 'get',
+            successCode: 0,
+            requestDataParse(query) {
+                return query;
+            },
+            responseDataParse(data) {
+                return data.data;
+            }
+            // transform(data) {
+            //     return data.map(item => {
+            //         item.testTextarea = '测试字段';
+            //         return item;
+            //     });
+            // }
+        }
     },
     fields: {
         // a: {
@@ -45,12 +61,13 @@ ams.resource('resource', {
         id: {
             type: 'text',
             label: 'id',
-            // hidden: true,
+            hidden: true,
             on: {
                 change: function(...args) {
                     console.log('text change', args, this);
                 }
-            }
+            },
+            info: '提示信息'
             // props: {
             //     align: 'left',
             //     'header-align': 'center'
@@ -74,19 +91,50 @@ ams.resource('resource', {
         },
         testArrays: {
             type: 'array',
-            info: '提示信息',
+            // info: '提示信息',
+            info: {
+                icon: 'el-icon-question',
+                content: '我是提示2'
+            },
             label: 'testTexts',
+            // hidden: true,
             field: {
                 type: 'text',
-                label: 'testTexts',
+                // label: 'testTexts',
                 props: {
                     'suffix-icon': 'el-icon-service'
+                }
+            }
+        },
+        testButton: {
+            type: 'button',
+            label: '按钮',
+            labelWidth: '0',
+            props: {
+                size: 'mini',
+                type: 'primary'
+            },
+            tooltip: {
+                effect: 'dark',
+                content: '提示文字',
+                placement: 'top-start'
+            },
+            show: function(data) {
+                return data.id < 10;
+            },
+            // 事件触发机制 on 或者 event
+            // event: 'submit',
+            on: {
+                click: function() {
+                    console.log('click---', this);
+                    this.callAction('submit');
                 }
             }
         },
         testText: {
             type: 'text',
             label: '文本',
+            hidden: true,
             rules: [
                 { required: true, message: '请输入活动名称', trigger: 'blur' },
                 {
@@ -102,28 +150,30 @@ ams.resource('resource', {
         },
         testDate: {
             type: 'date',
-            label: '日期'
+            label: '日期',
+            changeConfig(fields, context) {
+                fields.style = {
+                    color: 'red'
+                };
+                return fields;
+            }
         },
         testTime: {
             type: 'time',
             label: '时间1',
-            rules: [
-                { required: true, message: '请输入时间1', trigger: 'blur' }
-            ]
+            rules: [{ required: true, message: '请输入时间1', trigger: 'blur' }]
         },
         testDatetime: {
             type: 'datetime',
             label: '时间2',
-            rules: [
-                { required: true, message: '请输入时间2', trigger: 'blur' }
-            ]
+            rules: [{ required: true, message: '请输入时间2', trigger: 'blur' }]
         },
         testSwitch: {
             type: 'switch',
             label: '开关',
             props: {
                 inline: true,
-                formItemWidth: '40%'
+                formItemWidth: '45%'
             }
         },
         testPassword: {
@@ -132,24 +182,22 @@ ams.resource('resource', {
             label: '密码',
             props: {
                 inline: true,
-                formItemWidth: '40%'
+                formItemWidth: '45%'
             }
         },
         testColor: {
             type: 'color',
             label: '颜色',
+            input: true,
             props: {
-                inline: true,
-                formItemWidth: '40%'
+                // size: 'mini',
+                // inline: true,
+                width: '180px'
             }
         },
         testRate: {
             type: 'rate',
-            label: '评分',
-            props: {
-                inline: true,
-                formItemWidth: '40%'
-            }
+            label: '评分'
         },
         testRadio: {
             type: 'radio',
@@ -169,27 +217,34 @@ ams.resource('resource', {
             type: 'radio',
             label: '单选2',
             props: {
-                options: [{
-                    label: '黄金糕',
-                    value: 0
-                }, {
-                    label: '双皮奶',
-                    value: 1
-                }, {
-                    label: '蚵仔煎',
-                    value: 2,
-                    disabled: true
-                }, {
-                    label: '龙须面',
-                    value: 'd',
-                    border: true
-                }, {
-                    label: '北京烤鸭',
-                    value: 'e'
-                }, {
-                    label: '哈哈哈',
-                    value: 5
-                }]
+                options: [
+                    {
+                        label: '黄金糕',
+                        value: 0
+                    },
+                    {
+                        label: '双皮奶',
+                        value: 1
+                    },
+                    {
+                        label: '蚵仔煎',
+                        value: 2,
+                        disabled: true
+                    },
+                    {
+                        label: '龙须面',
+                        value: 'd',
+                        border: true
+                    },
+                    {
+                        label: '北京烤鸭',
+                        value: 'e'
+                    },
+                    {
+                        label: '哈哈哈',
+                        value: 5
+                    }
+                ]
             }
         },
         testCheckbox: {
@@ -222,28 +277,35 @@ ams.resource('resource', {
             collapseLimit: 2,
             // useStringValue: false,
             props: {
-                options: [{
-                    label: '黄金糕',
-                    value: 'a',
-                    disabled: true
-                }, {
-                    label: '双皮奶',
-                    value: 'b'
-                }, {
-                    label: '蚵仔煎',
-                    value: 'c'
-                }, {
-                    label: '哈哈哈',
-                    value: 222,
-                    border: true
-                }, {
-                    label: '龙须面',
-                    value: 'd',
-                    border: true
-                }, {
-                    label: '北京烤鸭',
-                    value: 'e'
-                }]
+                options: [
+                    {
+                        label: '黄金糕',
+                        value: 'a',
+                        disabled: true
+                    },
+                    {
+                        label: '双皮奶',
+                        value: 'b'
+                    },
+                    {
+                        label: '蚵仔煎',
+                        value: 'c'
+                    },
+                    {
+                        label: '哈哈哈',
+                        value: 222,
+                        border: true
+                    },
+                    {
+                        label: '龙须面',
+                        value: 'd',
+                        border: true
+                    },
+                    {
+                        label: '北京烤鸭',
+                        value: 'e'
+                    }
+                ]
             }
         },
         testSelect: {
@@ -254,7 +316,8 @@ ams.resource('resource', {
             remoteConfig: {
                 action: `${prefix}tag`,
                 queryKey: 'requiredName',
-                labelKey: 'name'
+                labelKey: 'name',
+                isInitRemoteOptions: false
             }
         },
 
@@ -563,43 +626,48 @@ ams.resource('resource', {
                 ]
             },
             slots: {
-                'left-footer': [{
-                    style: {
-                        float: 'left',
-                        marginTop: '6px'
+                'left-footer': [
+                    {
+                        style: {
+                            float: 'left',
+                            marginTop: '6px'
+                        },
+                        props: {
+                            size: 'mini',
+                            type: 'success'
+                        },
+                        text: '操作',
+                        onClick() {
+                            console.log('操作');
+                        }
                     },
-                    props: {
-                        size: 'mini',
-                        type: 'success'
-                    },
-                    text: '操作',
-                    onClick() {
-                        console.log('操作');
+                    {
+                        style: {
+                            float: 'right',
+                            margin: '6px 8px 0 0'
+                        },
+                        props: {
+                            size: 'mini',
+                            type: 'success'
+                        },
+                        text: '编辑',
+                        onClick() {
+                            console.log('编辑');
+                        }
                     }
-                }, {
-                    style: {
-                        float: 'right',
-                        margin: '6px 8px 0 0'
-                    },
-                    props: {
-                        size: 'mini',
-                        type: 'success'
-                    },
-                    text: '编辑',
-                    onClick() {
-                        console.log('编辑');
+                ],
+                'right-footer': [
+                    {
+                        props: {
+                            size: 'mini',
+                            type: 'primary'
+                        },
+                        text: '操作',
+                        onClick() {
+                            console.log('操作');
+                        }
                     }
-                }],
-                'right-footer': [{
-                    props: {
-                        size: 'mini',
-                        type: 'primary'
-                    },
-                    text: '操作',
-                    onClick() {
-                        console.log('操作');
-                    }
-                }]
+                ]
             }
         },
         testDatetimerange: {
@@ -629,12 +697,13 @@ ams.resource('resource', {
             }
         },
         testHeadImage: {
-            type: 'headimage',
+            type: 'image',
             label: '头像',
             tip: '只能上传jpg/png文件，且不超过500kb',
             successUrlKey: 'url',
             props: {
-                action: `${prefix}upload-image`
+                action: `${prefix}upload-image`,
+                headimage: true
             }
         },
         testFile: {
@@ -643,8 +712,7 @@ ams.resource('resource', {
             tip: '只能上传jpg/png文件，且不超过500kb',
             successUrlKey: 'url',
             props: {
-                'on-preview': function (params) {
-                },
+                'on-preview': function(params) {},
                 'button-label': '导入',
                 // multiple: true,
                 // drag: true,
@@ -674,48 +742,66 @@ ams.resource('resource', {
             type: 'tree',
             label: '树形控件',
             props: {
-                options: [{
-                    value: 1,
-                    label: '一级 1',
-                    children: [{
-                        value: 4,
-                        label: '二级 1-1',
-                        children: [{
-                            value: 9,
-                            label: '三级 1-1-1',
-                            children: [{
-                                value: 91,
-                                label: '四级 1-1-1-1'
-                            }, {
-                                value: 92,
-                                label: '四级 1-1-1-2'
-                            }]
-                        }, {
-                            value: 10,
-                            label: '三级 1-1-2'
-                        }]
-                    }]
-                }, {
-                    value: 2,
-                    label: '一级 2',
-                    children: [{
-                        value: 5,
-                        label: '二级 2-1'
-                    }, {
-                        value: 6,
-                        label: '二级 2-2'
-                    }]
-                }, {
-                    value: 3,
-                    label: '一级 3',
-                    children: [{
-                        value: 7,
-                        label: '二级 3-1'
-                    }, {
-                        value: 8,
-                        label: '二级 3-2'
-                    }]
-                }]
+                options: [
+                    {
+                        value: 1,
+                        label: '一级 1',
+                        children: [
+                            {
+                                value: 4,
+                                label: '二级 1-1',
+                                children: [
+                                    {
+                                        value: 9,
+                                        label: '三级 1-1-1',
+                                        children: [
+                                            {
+                                                value: 91,
+                                                label: '四级 1-1-1-1'
+                                            },
+                                            {
+                                                value: 92,
+                                                label: '四级 1-1-1-2'
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        value: 10,
+                                        label: '三级 1-1-2'
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        value: 2,
+                        label: '一级 2',
+                        children: [
+                            {
+                                value: 5,
+                                label: '二级 2-1'
+                            },
+                            {
+                                value: 6,
+                                label: '二级 2-2'
+                            }
+                        ]
+                    },
+                    {
+                        value: 3,
+                        label: '一级 3',
+                        children: [
+                            {
+                                value: 7,
+                                label: '二级 3-1'
+                            },
+                            {
+                                value: 8,
+                                label: '二级 3-2'
+                            }
+                        ]
+                    }
+                ]
             }
         }
         // testEditor: {

@@ -1,19 +1,8 @@
 <template>
     <ul class="icon-list">
-        <li><span><i class="ams-icon-watcher"></i><span class="icon-name">ams-icon-watcher</span></span></li>
-        <li><span><i class="ams-icon-advocate"></i><span class="icon-name">ams-icon-advocate</span></span></li>
-        <li><span><i class="ams-icon-fold"></i><span class="icon-name">ams-icon-fold</span></span></li>
-        <li><span><i class="ams-icon-crown"></i><span class="icon-name">ams-icon-crown</span></span></li>
-        <li><span><i class="ams-icon-heart"></i><span class="icon-name">ams-icon-heart</span></span></li>
-        <li><span><i class="ams-icon-brick"></i><span class="icon-name">ams-icon-brick</span></span></li>
-        <li><span><i class="ams-icon-dashboard"></i><span class="icon-name">ams-icon-dashboard</span></span></li>
-        <li><span><i class="ams-icon-portrait"></i><span class="icon-name">ams-icon-portrait</span></span></li>
-        <li><span><i class="ams-icon-brand-equity"></i><span class="icon-name">ams-icon-brand-equity</span></span></li>
-        <li><span><i class="ams-icon-crowd-manage"></i><span class="icon-name">ams-icon-crowd-manage</span></span></li>
-        <li><span><i class="ams-icon-account-sales"></i><span class="icon-name">ams-icon-account-sales</span></span></li>
-        <li><span><i class="ams-icon-help-center"></i><span class="icon-name">ams-icon-help-center</span></span></li>
-        <li><span><i class="ams-icon-data-report"></i><span class="icon-name">ams-icon-data-report</span></span></li>
-        <li><span><i class="ams-icon-customer-operation"></i><span class="icon-name">ams-icon-customer-operation</span></span></li>
+        <li v-for="icon in icons">
+            <span><i :class="['ams-icon-' + icon]"></i><span class="icon-name">ams-icon-{{ icon }}</span></span>
+        </li>
     </ul>
 </template>
 
@@ -21,6 +10,22 @@
 import '../../entry'
 
 export default {
+    data() {
+        return {
+            icons: [
+                'picture', 'split', 'time', 'clock2', 'marketing', 'funnel', 'pmd-logo',
+                'attract', 'star', 'star2', 'fold', 'circle-square', 'circles', 't-shirt', 'trademark', 'handbag', 'bulb', 'warning',
+                'data-sale', 'data-sale-7d', 'data-sun-black', 'data-mid', 'data-inventory', 'data-sale-x', 'data-footmark', 'data-price-field',
+                'data-price', 'data-inventory-field', 'data-low-inventory', 'data-point-star', 'handbag2', 'precent',
+                'lower-prices', 'petal', 'tag', 'caret-left', 'caret-right', 'caret-bottom', 'caret-bottom', 'caret-top', 
+                'information', 'export', 'data', 'flat', 'top', 'bottom', 'ams', 'vis', 'man', 'woman', 'watcher', 'brick', 'heart', 'advocate',
+                'crown', 'code', 'clock', 'car', 'star', 'edit', 'view', 'fixed', 'prohibit', 'balance', 'arrow-up', 'arrow-down', 'required', 'error',
+                'circle-plus', 'search', 'document-check', 'check', 'data-footmark', 'data-percent', 'reset', 'big-arrow-up',
+                'check2', 'close', 'data-line', 'dashboard', 'portrait', 'brand-equity', 'user-manager', 'account-sales', 'help', 'data-report',
+                'customer-operation', 'question', 'user', 'mp', 'list-search', 'list-user', 'system-icon'
+            ]
+        }
+    },
     mounted(){
         
     }

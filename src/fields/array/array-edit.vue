@@ -26,24 +26,26 @@
                                     icon="el-icon-minus"></el-button>
                         <el-button size="mini"
                                     circle
-                                    v-if="index"
+                                    v-if="index && sortable"
                                     @click="moveUp(index)"
                                     icon="el-icon-caret-top"></el-button>
                         <el-button size="mini"
                                     circle
-                                    v-if="index < value.length - 1"
+                                    v-if="index < value.length - 1 && sortable"
                                     @click="moveDown(index)"
                                     icon="el-icon-caret-bottom"></el-button>
                     </template>
                     {{field.field.label && field.field.label + (index + 1)}}
                 </div>
 
-                <component :is="`ams-field-${field.field.type}-${field.field.ctx}`"
+                <component v-if="getShowState(field.field, val)"
+                           :is="`ams-field-${field.field.type}-${field.field.ctx}`"
                            :field="field.field"
                            :value="val"
                            :name="name"
+                           :context="context"
                            :path="`${path}[${index}]`"
-                           :class="`ams-field ams-field-${field.field.type}-${field.field.ctx} ${!field.field.label ? 'ams-field-no-label': ''}`" />
+                           :class="`ams-field ams-field-${field.field.type}-${field.field.ctx} ${!field.field.label ? 'ams-field-no-label' : ''}`" />
             </el-form-item>
         </div>
 
@@ -55,7 +57,7 @@
 import mixins from '../../ams/mixins';
 
 export default {
-    mixins: [mixins.fieldEditArrayMixin],
+    mixins: [mixins.fieldEditArrayMixin, mixins.getShowState],
     data() {
         return {
             showOperationIndex: -1
@@ -68,6 +70,9 @@ export default {
         },
         minLimit() {
             return this.field.props && this.field.props.min;
+        },
+        sortable() {
+            return !(this.field.props && this.field.props.sortable === false);
         }
     },
     methods: {
@@ -118,6 +123,7 @@ export default {
 <style lang="scss">
 .ams-field-array-label {
     position: relative;
+    z-index: 2;
     padding-left: 30px;
     .el-button {
         position: absolute;
@@ -148,6 +154,6 @@ export default {
 }
 // 没有label时
 .ams-field-no-label{
-    margin-left: 35px;
+    padding-left: 35px;
 }
 </style>

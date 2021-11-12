@@ -13,9 +13,34 @@ ams.block('editor', {
                 list: 'list'
             },
             fields: {
-                testEditor: {
+                testEditor1: {
                     type: 'editor',
-                    label: '富文本'
+                    label: '富文本',
+                    on: {
+                        blur($event) {
+                            console.log('onEditorBlur');
+                        },
+                        focus($event) {
+                            console.log('onEditorFocus');
+                        },
+                        ready($event) {
+                            console.log('onEditorReady');
+                        }
+                    }
+                },
+                testEditor2: {
+                    type: 'editor',
+                    label: '富文本自定义配置',
+                    props: {
+                        options: {
+                            placeholder: '自定义 placeholder',
+                            modules: {
+                                toolbar: [
+                                    ['bold', 'italic', 'underline', 'strike']
+                                ]
+                            }
+                        }
+                    }
                 },
                 testMarkdown: {
                     type: 'markdown',
@@ -26,9 +51,9 @@ ams.block('editor', {
     },
     blocks: {
         editorEdit: {
+            ctx: 'edit',
             type: 'form',
             resource: 'resource-editor', // 此处的resource能否去掉？
-            ctx: 'edit',
             events: {
                 init: '@read'
             },
@@ -43,12 +68,10 @@ ams.block('editor', {
             }
         },
         editorView: {
-            type: 'form',
             ctx: 'view',
-
+            type: 'form',
             // 指定block使用的资源为上面声明的demo-res
             resource: 'resource-editor',
-
             events: {
                 init: '@read'
             },

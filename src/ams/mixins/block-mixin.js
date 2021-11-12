@@ -1,8 +1,29 @@
 import Vue from 'vue';
 import ams from '../index';
-import { listStringHasValue, get, getByOrder, deepExtend } from '../../utils';
+import { listStringHasValue, get, getByOrder, deepExtend, getType, watermark, hasOwn } from '../../utils';
 import { getRouter } from './router';
 import Blank from '../../blocks/block/Blank';
+
+function noop(a, b, c) {}
+function isAmsReservedMethod(methodKey) {
+    return [
+        'showLoading',
+        'hideLoading',
+        'getOperationsCounts',
+        'getConfig',
+        'initRouter',
+        'initActionsToVM',
+        'initBlock',
+        'initDefaultField',
+        'initFields',
+        'getFieldsLayout',
+        'setBlockData',
+        'setFieldData',
+        'fieldChange',
+        'emitEvent',
+        'callAction'
+    ].includes(methodKey);
+}
 
 export default {
     data() {
@@ -13,7 +34,8 @@ export default {
             layout: null,
             resource: null,
             ready: false,
-            loading: false
+            loading: false,
+            events: []
         };
     },
     provide: function() {
@@ -38,10 +60,29 @@ export default {
         this.$nextTick(async () => {
             // 初始化init
             this.ready = true;
-            await this.emitEvent('created');
+
             await this.emitEvent('init');
+            await this.emitEvent('created');
 
             this.afterReady && this.afterReady();
+
+            let wmOptions = this.block.options && this.block.options.watermark;
+            if (wmOptions) {
+                wmOptions = getType(wmOptions) === 'object' ? wmOptions : {};
+                // eslint-disable-next-line
+                watermark(Object.assign({
+                    container: this.$el,
+                    uid: this._uid
+                }, wmOptions));
+            }
+
+            const show = this.getShowState(this.block, this.block.data);
+            if (!show) {
+                this.block.style = this.block.style || {};
+                this.block.style = {
+                    display: 'none'
+                };
+            }
         });
     },
 
@@ -58,6 +99,12 @@ export default {
             }
 
             return on;
+        }
+    },
+    async beforeDestroy() {
+        await this.emitEvent('beforeDestroy');
+        if (this.events && this.events.length) {
+            this.events.forEach(e => e.remove());
         }
     },
 
@@ -78,6 +125,16 @@ export default {
         }
     },
     methods: {
+        getShowState(block, data) {
+            const type = typeof block.show;
+            if (type === 'undefined') {
+                return true;
+            } else if (type === 'function') {
+                return block.show.call(this.$block || this, data);
+            } else if (type === 'boolean') {
+                return block.show;
+            }
+        },
         showLoading() {
             if (this.block && this.block.options.showLoading !== false) {
                 this.loading = true;
@@ -90,21 +147,29 @@ export default {
         },
         getOperationsCounts() {
             // console.log('getOperationsCounts:');
-            let counts = {};
-            if (this.block) {
-                if (this.block.operations) {
-                    Object.keys(this.block.operations).forEach(key => {
-                        let operaSlot = this.block.operations[key].slot || 'operations';
-                        if (!counts[operaSlot]) {
-                            counts[operaSlot] = 1;
-                        } else {
-                            counts[operaSlot]++;
-                        }
-                    });
-                }
-                this.block.operationsCounts = counts;
+            if (!this.block || !this.block.operations) {
+                this.block.operationsCounts = {}; // 初始化，防止在表格等显示操作列的时候（v-if="block.operationsCounts.operations"）异常
+                return; // 貌似没有必要，因此只有 !!this.block,才会调用 getOperationsCounts
             }
+            let counts = {};
+            const operations = this.block.operations;
+            Object.keys(operations).forEach(key => {
+                let operaSlot = operations[key].slot || 'operations';
+                if (!counts[operaSlot]) {
+                    counts[operaSlot] = 1;
+                } else {
+                    counts[operaSlot]++;
+                }
+            });
+            this.block.operationsCounts = counts;
         },
+        /**
+         *
+         * @param {String} key
+         *
+         * eg: this.getConfig(`resource.api.${action}.dataPath`) || this.getConfig(`resource.api.dataPath`) || 'data.list';
+         *
+         */
         getConfig(key) {
             return getByOrder(get(this, key), get(ams.configs, key));
         },
@@ -135,16 +200,40 @@ export default {
                 });
             }
         },
+        // 借鉴vue源码中的initMethods
+        initActionsToVM() {
+            const props = this.$options.props;
+            const methods = this.block.actions || {};
+            // eslint-disable-next-line guard-for-in
+            for (const key in methods) {
+                if (process.env.NODE_ENV !== 'production') {
+                    if (methods[key] == null) {
+                        console.warn(`Method "${key}" has an undefined value in the component definition. ` +
+                  `Did you reference the function correctly?`);
+                    }
+                    if (props && hasOwn(props, key)) {
+                        console.warn(`Method "${key}" has already been defined as a prop.`);
+                    }
+                    if (isAmsReservedMethod(key)) {
+                        console.warn(`Method "${key}" conflicts with an existing AMS block method`);
+                    }
+                }
+                this[key] = methods[key] == null ? noop : methods[key].bind(this);
+            }
+        },
+        initResource() {
+            const resource = this.block.resource;
+            const isStr =  typeof this.block.resource === 'string';
+            this.resource = isStr ? ams.resources[resource] : ams.resource('', resource);
+        },
         /**
          * 如果新增、删除fields，需要触发initBlock
          */
         async initBlock() {
             this.block = await ams.getBlock(this.name);
+            this.initActionsToVM(); // #70
             if (this.block) {
-                this.resource =
-                    typeof this.block.resource === 'string'
-                        ? ams.resources[this.block.resource]
-                        : ams.resource('', this.block.resource);
+                this.initResource();
                 ams.$blocks[this.name] = this;
                 this.initFields();
                 this.getOperationsCounts();
@@ -176,7 +265,9 @@ export default {
                                     if (!(propKey in field.props)) {
                                         field.props[propKey] = defaultField.props[propKey];
                                     } else if (propKey === 'props') {
+                                        // eslint-disable-next-line
                                         field.props[propKey] = Object.assign(
+                                            {},
                                             defaultField.props[propKey] || {},
                                             field.props[propKey] || {}
                                         );
@@ -378,7 +469,11 @@ export default {
             } else {
                 if (typeof data === 'undefined') {
                     // 默认值
-                    data = field.default;
+                    if (typeof field.set === 'function' && typeof field.get === 'function') {
+                        data = field.set(field.get(field.default, field), field);
+                    } else {
+                        data = field.default;
+                    }
                 }
                 if (typeof data !== 'undefined') {
                     // fieldChange event
@@ -408,16 +503,15 @@ export default {
         },
         async emitEvent(name, args) {
             // console.log('emitEvent', name, args)
-            if (name) {
-                const action = this.block.events[name];
-                // 保证传入action的都是一个对象
-                args = args || {};
-                if (action) {
-                    await this.callAction(action, args);
-                } else {
-                    // 如果没有绑定event、默认调用同名action、这样可以简化减少如 evnets:{list:'@list'} 的配置
-                    await this.callAction(`@${name}`, args);
-                }
+            if (!name) return;
+            const action = this.block.events[name];
+            // 保证传入action的都是一个对象
+            args = args || {};
+            if (action) {
+                await this.callAction(action, args);
+            } else {
+                // 如果没有绑定event、默认调用同名action、这样可以简化减少如 events:{list:'@list'} 的配置
+                await this.callAction(`@${name}`, args);
             }
         },
         async callAction(...args) {

@@ -1,7 +1,9 @@
 <template>
     <div v-if="ready"
         class="ams-block-grid"
-        :style="gridStyle" >
+        :style="gridStyle"
+        v-on="on"
+        v-bind="block.props" >
         <ams-block class="ams-block-grid-item" v-for="n in block.blocks" :key="n" :name="n" />
     </div>
 </template>
@@ -30,6 +32,18 @@ export default {
 
 <style lang="scss">
 .ams-block-grid{
-    display: grid;
+    > * {
+        display: inline-block;
+        vertical-align: top;
+    }
+}
+@supports (display: grid) {
+    .ams-block-grid {
+        display: grid;
+        > * {
+            width: auto!important;
+            margin: 0!important;
+        }
+    }
 }
 </style>

@@ -1,3 +1,4 @@
+export const defaultBlockConfig = {};
 export const defaultBlockProps = {
     form: {
         ref: 'amsForm',
@@ -19,6 +20,12 @@ export const defaultBlockProps = {
         placement: 'bottom-start',
         width: '200',
         trigger: 'hover'
+    }
+};
+
+export const defaultBlockDatas = {
+    router: {
+        title: '系统标题'
     }
 };
 

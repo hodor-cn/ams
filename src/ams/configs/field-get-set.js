@@ -26,6 +26,16 @@ export const equals = function(val1, val2, field) {
         return true;
     }
 
+    // 如果是File类型
+    if (val1 instanceof File && val2 instanceof File) {
+        for (const key in val1) {
+            if (val1[key] !== val2[key]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     const type1 = typeof val1;
     const type2 = typeof val2;
 
@@ -174,7 +184,7 @@ export const getDate = function(val, field) {
     // console.log('getDate', val);
 
     // element内部的date，如果传入是时间戳，会自动转换，不需要处理
-    return /^\d{11,13}/.test(val) ? Number(val) : val;
+    return /^(-)?\d{1,13}$/.test(val) ? Number(val) : val;
 };
 
 export const setDate = function(val, field) {

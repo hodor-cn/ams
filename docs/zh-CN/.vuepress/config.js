@@ -1,13 +1,14 @@
 // 根据打包命令参数，决定打包输出路径
+// npm run build -- ams-os 打包路径将是ams-os库在你本地的路径（按需修改）
 const dest = 'dist'
 
 module.exports = {
-  title: 'AMS',
+  title: 'AMS文档',
   base: '/ams/',
   description: '基于JSON配置来快速搭建管理后台前端页面的JavaScript框架',
   dest: dest, // 指定 vuepress build 的输出目录, 默认值: .vuepress/dist
   head: [
-    ['link', { rel: 'icon', href: 'https://h5rsc.vipstatic.com/ams/favicon64.ico' }]
+    ['link', { rel: 'icon', href: 'https://h5rsc.vipstatic.com/ams/favicon64*2.ico' }]
   ],
   plugins: [
     'flowchart'
@@ -21,38 +22,24 @@ module.exports = {
     nav: [
       { text: '首页', link: '/' },
       { text: '用户指南',
-        items: [
-          {
-            text: '指南',
-            link: '/api/'
-          },
-          {
-            text: '工具',
-            link: '/tools/'
-          },
-          {
-            text: '案例',
-            link: '/example/'
-          }
-        ]
+        link: '/api/'
       },
-      { text: '物料市场',
-        items: [
-          {
-            text: '字段',
-            link: '/field/'
-          },
-          {
-            text: '区块',
-            link: '/block/'
-          },
-          {
-            text: '市场',
-            link: '/market/'
-          }
-        ]
+      {
+        text: '字段',
+        link: '/field/'
       },
-      { text: 'API', link: '/api/' },
+      {
+        text: '区块',
+        link: '/block/'
+      },
+      {
+        text: '市场',
+        link: '/market/'
+      },
+      {
+        text: '示例',
+        link: 'https://vipshop.github.io/ams/example/#/'
+      },
       {
         text: '版本更新',
         items: [
@@ -63,8 +50,16 @@ module.exports = {
           {
             text: '规划总览',
             link: '/version/VERSION'
+          },
+          {
+            text: 'cdn资源',
+            link: '/version/cdn-script'
           }
         ]
+      },
+      {
+        text: 'GITHUB',
+        link: 'https://github.com/vipshop/ams'
       }
     ],
     sidebar: {
@@ -74,9 +69,11 @@ module.exports = {
           collapsable: false,
           children: [
             '',
+            'try',
+            'quickstart',
             'resource',
             'block',
-            'icon',
+            'template',
             'demo'
           ]
         },
@@ -95,8 +92,8 @@ module.exports = {
             'custom',
             'ams-config',
             'default-config',
-            'router',
-            'faq'
+            'access',
+            'icon'
           ]
         },
         {
@@ -114,7 +111,7 @@ module.exports = {
         {
           title: '基础',
           collapsable: false,
-          children: ['text','password', 'textarea', 'switch',  'color', 'rate', 'unitselect', 'link']
+          children: ['text','password', 'textarea', 'switch',  'color', 'rate', 'unitselect', 'link', 'button', 'html', 'tree']
         },
         {
           title: '时间',
@@ -129,7 +126,7 @@ module.exports = {
         {
           title: '上传',
           collapsable: false,
-          children: ['image', 'headImage', 'audio', 'video', 'file', 'originfile']
+          children: ['image', 'audio', 'video', 'file', 'originfile']
         },
         {
           title: '数字',
@@ -155,10 +152,12 @@ module.exports = {
             children: [
               'api',
               'form',
+              'grid',
               'list',
               'imagelist',
               'table',
               'dialog',
+              'drawer',
               'error',
               'router',
               'collapse',
@@ -167,14 +166,15 @@ module.exports = {
               'tabs',
               'steps',
               'card',
-              'dropdown'
+              'dropdown',
+              'popover'
             ]
         },
         {
           title: '深入',
           collapsable: false,
           children: [
-            'deep-operation', 'deep-router'
+            'deep-operation', 'deep-router', 'action', 'deep-watermark'
           ]
         },
         {
@@ -183,7 +183,7 @@ module.exports = {
             children: ['chart']
         }
       ],
-      '/version/': ['changelog', 'VERSION']
+      '/version/': ['changelog', 'VERSION', 'cdn-script']
     }
   }
 };

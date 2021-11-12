@@ -7,7 +7,7 @@ Grid: Grid 网格布局
 
 ### 基础用法
 
-> 一行两列，列间距为0，是通过设置`style: {'grid-gap': '0'}`控制
+> 一行两列，列间距为0，是通过设置`style: {'grid-gap': '0px'}`控制
 
 <ClientOnly>
 <block-grid-demo blockName="defaultGrid" onlineDemo="https://codepen.io/w3cmark/pen/eYOjPWo"/>
@@ -19,6 +19,14 @@ Grid: Grid 网格布局
 
 <ClientOnly>
 <block-grid-demo blockName="cardCloumnGrid" onlineDemo="https://codepen.io/w3cmark/pen/JjPBmJd"/>
+</ClientOnly>
+
+### 如何兼容不支持grid布局的浏览器？<Badge text="0.20.7+"/>
+
+不支持grid布局时，ams会把子项按照`inline-block`展示，所以通过给子项配置单独的样式：`width` 和 `height`。
+
+<ClientOnly>
+<block-grid-demo blockName="unsupportGrid" onlineDemo="https://codepen.io/w3cmark/pen/qBBQbJW"/>
 </ClientOnly>
 
 ### 一行三列

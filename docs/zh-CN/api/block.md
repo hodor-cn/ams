@@ -2,6 +2,10 @@
 
 区块是AMS的基础组成单元，整个页面由多个 `block` 组合嵌套组成，每个 `block` 有自己的事件、行为、操作
 
+<ClientOnly>
+<scrimba href="https://scrimba.com/c/cV8vRKuR" title="字段和区块" />
+</ClientOnly>
+
 ## 注册 block
 
 注册一个name为 `formView` 的block
@@ -26,6 +30,12 @@ ams.block('formView', {
 以上注册了 `formView` block
 
 ## 使用 block
+> 注意：如果在 template 中使用 `<ams-block />`，需要先在 `main.js` 中安装 `ams`，引入 ams 中的区块和字段。文档参见[通过npm安装](https://vipshop.github.io/ams/api/#%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F)
+
+```js
+import ams from '@ams-team/ams';
+Vue.use(ams); // 类似 Vue.use(element-ui);
+```
 
 每个block本质都是[Vue组件](https://cn.vuejs.org/v2/guide/components-registration.html)，可以通过区块名 `name` 来引用：`<ams-block name="formView" />`，完整示例如下：
 
@@ -39,7 +49,7 @@ ams.block('formView', {
     ams.resource('demo', {
         key: 'id',
         api: { // 数据接口相关
-            prefix: '//rap2api.taobao.org/app/mock/231578/ams/mock/',
+            prefix: '//www.yournana.club/vipshop/',
             list: 'list'
         },
         fields: { // 字段
@@ -225,6 +235,10 @@ actions: {
 | show | Promise | 设置`this.data.visible`为`true`，当`this.$nextTick()`执行然后返回
 | hide | 无 | 设置`this.data.visible`为`false`
 | clearReturn | 无 | 清除上一次action的返回值
+| resetData | 无 | 重置block的data默认值
+| clear | 无 | 同resetData，重置block的默认值
+| showBatch | 无 | block-imagelist 显示 批量操作的按钮
+| hideBatch | 无 | block-imagelist 退出 批量操作的按钮
 | routerPush | Promise | 跳转新页面
 | routerReplace | Promise | 重定向当前页
 | routerGo | Promise | 回退或者前进 页面
@@ -234,6 +248,10 @@ actions: {
 | addItemDialog | Promise | (ams >= 0.7.7) 弹窗增加一项数据，可通过参数指定resource和blockConfig
 | editItemAfter | Promise | (ams >= 0.7.7) 在列表后面显示修改改项数据的表单，可通过参数指定resource和blockConfig
 | editItemDialog | Promise | (ams >= 0.7.7)  弹窗修改该项数据，可通过参数指定resource和blockConfig
+| addItemDrawer | Promise | (ams >= 0.7.7)  弹窗修改该项数据，可通过参数指定resource和blockConfig
+| editItemDrawer | Promise | (ams >= 0.7.7)  弹窗修改该项数据，可通过参数指定resource和blockConfig
+| viewItemDialog | Promise | (ams >= 0.32.3)  弹窗修改该项数据，可通过参数指定resource和blockConfig
+| viewItemDrawer | Promise | (ams >= 0.32.3)  弹窗修改该项数据，可通过参数指定resource和blockConfig
 
 可以自定义actions，可被`events`中使用，如果定义跟内置action同名则会覆盖默认提供方法
 
@@ -295,7 +313,8 @@ operations结构类型如下：
 		show?: String | Object | Function,
 		style: {
 			[styleName: String]: String
-		}
+        },
+        changeConfig: Function(field: Object, context: Object)
 	}
 }
 ```
@@ -304,8 +323,8 @@ operations结构类型如下：
 
 ```js
 operations: {
-	editItem: {
-		type: 'button',
+    editItem: {
+        type: 'button',
 		props: {
 			type: 'primary',
 			icon: 'el-icon-edit',
@@ -350,7 +369,7 @@ operations: {
 
 ```
 参数说明
-- `actionField`：对应blocks中的events名字，详细用法参考：[event 与 action](./action.md)
+- `actionField`：对应blocks中的events名字，详细用法参考：[event 与 action](/block/action.html)
 - `event`：指定调用event名，优先级大于 actionField
 - `slot`：指定operation所在插槽，如list支持 `searchs` 和 `multipleSelect` 定制搜索操作和多选操作
 - `field`：指定使用的field配置，使用String刚会使用本block内同名的field配置
@@ -358,7 +377,7 @@ operations: {
 - `style`：透传至operation根节点的style配置
 - `show`：满足show条件的才会显示，在list内是该行的值，在form内是data的值，如`show:{name:'test',value:2}` 当这一行的name字段的值为2时该operation会显示
 
-点击前往[更深入的了解operations](/api/operation.html)
+点击前往[更深入的了解operations](/block/deep-operation.html)
 
 ## props 属性、on 事件、style 样式的定制
 
@@ -396,7 +415,7 @@ block支持透传props、on和style 至 block 内部根元素（原生节点或�
     }" src="//b.appsimg.com/upload/vivaadmin/2018/11/07/69/1541579376290922128.png"/>
 ```
 
-## 通用配置
+## block 通用配置
 
 | 参数 | 类型 | 是否必传 | 说明
 | -- | -- | -- | --
@@ -414,3 +433,7 @@ block支持透传props、on和style 至 block 内部根元素（原生节点或�
 | operations | object、array | 否 | 配置operations
 | blocks | object、array | 否 | 子blocks配置，如为object则为具体的配置内容，如为array则是子blocks的key列表
 | render | string、boolean | 否 | 如果为true会自动渲染到body内，或者指定已有节点的querySelector
+
+我们已经学习了`字段`和`区块`，接下来，我们来学习如何用AMS配置一个完善的单页面案例
+
+[下一节：案例教程](/api/demo.html)

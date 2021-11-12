@@ -7,11 +7,13 @@
                       :rules="field.field.rules"
                       class="ams-array-item"
                       :prop="field.field.type !== 'array' && field.field.type !== 'object' ? `${path}[${index}]` : ''">
-            <component :is="`ams-field-${field.field.type}-${field.field.ctx}`"
+            <component v-if="getShowState(field.field, val)"
+                       :is="`ams-field-${field.field.type}-${field.field.ctx}`"
                        :field="field.field"
                        :value="val"
                        :name="name"
                        :path="`${path}[${index}]`"
+                       :context="context"
                        :class="`ams-field ams-field-${field.field.type}-${field.field.ctx}`" />
         </el-form-item>
     </div>
@@ -21,7 +23,7 @@
 import mixins from '../../ams/mixins';
 
 export default {
-    mixins: [mixins.fieldViewArrayMixin]
+    mixins: [mixins.fieldViewArrayMixin, mixins.getShowState]
 };
 </script>
 <style lang="scss">

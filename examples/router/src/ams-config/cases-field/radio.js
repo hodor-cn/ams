@@ -1,15 +1,14 @@
 import ams from '@ams-team/ams';
-
-const datas = {
-    radio: 'a',
-    radiobutton: 'a',
-    radioBorder: 'b',
-    radioButton: 'c'
-};
+import { prefix } from '@/utils';
 
 ams.block('radio', {
     resources: {
         radio: {
+            api: {
+                prefix: prefix,
+                read: 'getRadio',
+                update: 'update'
+            },
             fields: {
                 radio: {
                     type: 'radio',
@@ -39,7 +38,7 @@ ams.block('radio', {
                             {
                                 label: '哈哈哈',
                                 value: 1
-                            },
+                            }
                         ]
                     },
                     on: {
@@ -110,11 +109,12 @@ ams.block('radio', {
                         options: [
                             {
                                 label: '黄金糕',
-                                value: 'a',
+                                value: 'a'
                             },
                             {
                                 label: '双皮奶',
-                                value: 'b'
+                                value: 'b',
+                                disabled: true
                             },
                             {
                                 label: '蚵仔煎',
@@ -127,39 +127,38 @@ ams.block('radio', {
                             console.log('radiobutton-change', val);
                         }
                     }
-                },
+                }
             }
         }
     },
     blocks: {
         editRadio: {
             ctx: 'edit',
-            data: datas,
             type: 'form',
             resource: 'radio',
             style: {
                 width: '50%'
-            },
-            events: {
-                submit: '@create'
             },
             operations: {
                 submit: {
                     type: 'button',
                     label: '提交'
                 }
+            },
+            events: {
+                init: '@read',
+                submit: '@update'
             }
         },
         viewRadio: {
             ctx: 'view',
-            data: datas,
             type: 'form',
             resource: 'radio',
             style: {
                 width: '50%'
             },
             events: {
-                submit: '@create'
+                init: '@read'
             }
         }
     }

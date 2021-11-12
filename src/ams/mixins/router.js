@@ -15,11 +15,10 @@ export function getRoute(route) {
             children: null
         };
     } else if (route.component) {
-        const path = route.meta.path;
         return {
             ...route,
-            component: Vue.component(path.replace(/\/+/g, ''), route.component),
-            path,
+            component: route.component,
+            path: route.meta.path,
             children: null
         };
     }
@@ -51,8 +50,6 @@ export function getRouter(router) {
     const routes = [];
 
     getRoutes(router.routes, routes);
-
-    console.log('routes', routes);
 
     return new VueRouter({
         ...router,

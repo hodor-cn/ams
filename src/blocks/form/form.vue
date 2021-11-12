@@ -1,6 +1,6 @@
 <template>
     <div v-if="ready"
-         class="ams-block-form"
+         :class="'ams-block-form ' + (block.props['label-bold'] ? 'ams-block-form-label-bold' : '')"
          :style="block.style">
         <el-form :model="data"
                  v-loading="loading"
@@ -18,19 +18,20 @@
                                   :style="`width: ${fields[key].props && fields[key].props.formItemWidth}`"
                                   :rules="fields[key].ctx === 'view' ? undefined : fields[key].rules"
                                   :prop="fields[key].type !== 'array' && fields[key].type !== 'object' ? key : ''">
-                        <template v-if="fields[key].label" slot="label">
+                        <template v-if="fields[key].label && fields[key].labelWidth !== '0'" slot="label">
                             <el-tooltip effect="dark" placement="top" v-if="fields[key].info">
-                                <i class="el-icon-info ams-form-label-info"></i>
-                                <div slot="content" v-html="fields[key].info"></div>
+                                <i :class="(fields[key].info.icon || 'el-icon-info') + ' ams-form-label-info'"></i>
+                                <div slot="content" v-html="fields[key].info.content || fields[key].info"></div>
                             </el-tooltip>
                             {{fields[key].label}}
                         </template>
                         <component :is="`ams-field-${fields[key].type}-${fields[key].ctx}`"
-                                   :field="fields[key]"
+                                   :field="getField(fields[key], data)"
                                    :value="data[key]"
                                    :ref="`$${key}`"
                                    :name="name"
                                    :path="key"
+                                   :context="data"
                                    :class="`ams-field ams-field-${fields[key].type}-${fields[key].ctx}`" />
                         <div class="ams-form-item-desc" v-if="fields[key].desc && fields[key].ctx === 'edit'" v-html="fields[key].desc"></div>
                     </el-form-item>
@@ -39,7 +40,7 @@
                                   :label-width="fields[key].labelWidth"
                                   class="ams-form-inline"
                                   :key="key">
-                        <template v-if="fields[key].label" slot="label">
+                        <template v-if="fields[key].label && fields[key].labelWidth !== '0'" slot="label">
                             <el-tooltip effect="dark" placement="top" v-if="fields[key].info">
                                 <i class="el-icon-info ams-form-label-info"></i>
                                 <div slot="content" v-html="fields[key].info"></div>
@@ -48,16 +49,17 @@
                         </template>
                         <el-form-item v-for="fieldName in fieldLayout"
                                       :key="fieldName"
-                                      :label="fieldName === key ? '' : fields[fieldName].label"
-                                      :label-width="fields[fieldName].labelWidth"
+                                      :label="fieldName === key && fields[fieldName].labelWidth !== '0' ? '' : fields[fieldName].label"
+                                      :label-width="fieldName === key ? '0' : fields[fieldName].labelWidth"
                                       :rules="fields[fieldName].rules"
                                       :prop="fields[fieldName].type !== 'array' && fields[fieldName].type !== 'object' ? fieldName : ''">
                             <component :is="`ams-field-${fields[fieldName].type}-${fields[fieldName].ctx}`"
-                                       :field="fields[fieldName]"
+                                       :field="getField(fields[fieldName], data)"
                                        :value="data[fieldName]"
                                        :ref="`$${fieldName}`"
                                        :name="name"
                                        :path="fieldName"
+                                       :context="data"
                                        :class="`ams-field ams-field-${fields[fieldName].type}-${fields[fieldName].ctx}`" />
                         </el-form-item>
                         <div class="ams-form-item-desc" v-if="fields[key].desc && fields[key].ctx === 'edit'" v-html="fields[key].desc"></div>
@@ -81,7 +83,7 @@ import mixins from '../../ams/mixins';
 import { getType } from '../../utils';
 
 export default {
-    mixins: [mixins.blockMixin, mixins.getShowState],
+    mixins: [mixins.blockMixin, mixins.getField, mixins.getShowState],
     methods: {
         keyEnter(...args) {
             if (this.block.on
@@ -101,12 +103,18 @@ export default {
     vertical-align: top;
     margin-right: 10px;
 }
+.ams-block-form-label-bold{
+    .el-form-item__label{
+        font-weight: bold
+    }
+}
 .ams-form-label-info{
     margin-left: 2px;
     color: #888;
 }
 .ams-form-item-desc{
-    line-height: 40px;
+    line-height: 20px;
+    padding-top: 7px;
     font-size: 12px;
     color: #999;
 }
