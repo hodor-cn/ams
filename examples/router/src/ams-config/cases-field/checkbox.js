@@ -1,16 +1,23 @@
 import ams from '@ams-team/ams';
+import { prefix } from '@/utils';
 
 const datas = {
     checkbox: 'a,b,c',
     checkboxDisable: 'c',
     checkboxBorder: 'b,c',
     checkboxButton: 'a,c',
-    radioButton: 'a'
+    radioButton: 'a',
+    remoteCheckbox: 2003
 };
 
 ams.block('checkbox', {
     resources: {
         checkbox: {
+            api: {
+                prefix: prefix,
+                read: 'getCheckbox',
+                update: 'update'
+            },
             fields: {
                 checkbox: {
                     type: 'checkbox',
@@ -121,6 +128,18 @@ ams.block('checkbox', {
                             }
                         ]
                     }
+                },
+                remoteCheckbox: {
+                    BASE: 'SELECT_REMOTE',
+                    label: '远程选项',
+                    type: 'checkbox',
+                    remoteConfig: {
+                        action: `${prefix}tag`,
+                        queryKey: 'requiredName',
+                        labelKey: 'name',
+                        isInitEmpty: true,
+                        isMiniBackfill: false
+                    }
                 }
             }
         }
@@ -128,14 +147,14 @@ ams.block('checkbox', {
     blocks: {
         editCheckbox: {
             ctx: 'edit',
-            data: datas,
             type: 'form',
             resource: 'checkbox',
             style: {
                 width: '50%'
             },
             events: {
-                submit: '@create'
+                init: '@read',
+                submit: '@update'
             },
             operations: {
                 submit: {
@@ -162,7 +181,7 @@ ams.block('checkbox', {
                 width: '50%'
             },
             events: {
-                submit: '@create'
+                init: '@read'
             }
         }
     }

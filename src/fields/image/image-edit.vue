@@ -1,18 +1,20 @@
 <template>
-    <div :style="field.style">
+    <div :style="field.style" :class="handleClassName">
         <el-upload :on-success="handleUploadSuccess"
                    :before-upload="beforeUpload"
                    v-on="on"
                    v-bind="field.props">
-            <img v-if="imageUrl"
-                 :src="imageUrl">
+            <el-image
+                v-if="localValue"
+                :src="localValue"
+                :fit="field.props && field.props.fit"></el-image>
             <i v-else
                class="el-icon-plus"></i>
             <p class="edit-text"
-               v-show="imageUrl">修改</p>
+               v-show="localValue">修改</p>
         </el-upload>
         <i class="el-icon-error"
-           v-show="imageUrl"
+           v-show="localValue"
            @click="handleRemove"></i>
         <div slot="tip"
              class="el-upload__tip"
@@ -22,12 +24,15 @@
             可供选择的图片有：
             <ul v-if="field.props['default-image-list'].length" class="el-upload-list el-upload-list--picture-card el-default-list--picture-card">
                 <li
-                    :class="`el-upload-list__item ${imageUrl === item.url ? 'is-success' : ''}`"
+                    :class="`el-upload-list__item ${localValue === item.url ? 'is-success' : ''}`"
                     v-for="(item, index) in field.props['default-image-list']"
                     :key="index"
                     @click="handleChoseFromList(item.url)"
                     :title="item.name">
-                    <img :src="item.url" :alt="item.name" class="el-upload-list__item-thumbnail">
+                    <el-image
+                        :src="item.url"
+                        :fit="field.props && field.props.fit"
+                        class="el-upload-list__item-thumbnail"></el-image>
                     <span class="el-upload-list__item-name">{{item.name}}</span>
                     <label class="el-upload-list__item-status-label"><i class="el-icon-upload-success el-icon-check"></i></label>
                 </li>
@@ -43,14 +48,23 @@ import mixins from '../../ams/mixins';
 
 export default {
     mixins: [mixins.fieldEditMixin],
-    data() {
-        return {
-            previewUrl: ''
-        };
-    },
     computed: {
-        imageUrl() {
-            return this.localValue || this.previewUrl;
+        handleClassName() {
+            // 头像场景
+            let className = {
+                'ams-field-headimage': this.field.props.headimage
+            };
+
+            // 将配置的 `fit` 参值换成对应的类名，用以入侵 element ui upload
+            // 组件列表场景中，列表图片不可控的问题。
+            // https://element.eleme.cn/#/en-US/component/upload#filelist-with-thumbnail
+            // 对应控制的图片场景如下：
+            // https://element.eleme.cn/#/en-US/component/image#basic-usage
+            if (this.field.props.fit) {
+                className[`ams-field-image-fit-${this.field.props.fit}`] = true;
+            }
+
+            return className;
         }
     },
     methods: {
@@ -59,6 +73,7 @@ export default {
                 if (!this.field.check) {
                     return resolve();
                 }
+                const props = this.field.props || {};
 
                 let { maxSizeInKB, imgMaxWidth, imgMaxHeight, imgMinWidth, imgMinHeight, imgWidth, imgHeight } = this.field.check;
                 if (maxSizeInKB && (file.size / 1024) > maxSizeInKB) {
@@ -68,11 +83,9 @@ export default {
 
                 if (imgMaxWidth || imgMaxHeight || imgMinWidth || imgMinHeight || imgWidth || imgHeight) {
                     let image = new Image();
-                    image.onload = () => {
+                    image.onload = async () => {
                         let widthVaild = true;
                         let heightValid = true;
-
-                        console.log(image.width, image.height);
 
                         if (imgMaxWidth && image.width > imgMaxWidth) {
                             widthVaild = false;
@@ -103,41 +116,57 @@ export default {
                             this.$message('图片高度必须为' + imgHeight + 'px');
                         }
                         if (widthVaild && heightValid) {
+                            if (typeof props['before-upload'] === 'function') {
+                                resolve(props['before-upload'](file));
+                            }
+
                             resolve();
                         } else {
                             reject(); // eslint-disable-line prefer-promise-reject-errors
                         }
                     };
+
                     image.src = URL.createObjectURL(file);
                 } else {
+                    if (typeof props['before-upload'] === 'function') {
+                        resolve(props['before-upload'](file));
+                    }
                     resolve();
                 }
             });
         },
         handleUploadSuccess(res, file) {
             console.log('handleUploadSuccess', res, file);
+            const props = this.field.props || {};
             // todo: 预览、上传进度
-            const successCode = this.$block.getConfig('resource.api.successCode');
+            let successCode;
+            if (props && typeof props.successCode !== 'undefined') {
+                successCode = props.successCode;
+            } else {
+                successCode = this.$block.getConfig('resource.api.successCode');
+            }
             if (res.code === successCode) {
                 const successUrlKey = this.field.successUrlKey || 'url';
-                if (res.data && res.data[successUrlKey]) {
-                    this.previewUrl = URL.createObjectURL(file.raw);
-                    this.localValue = res.data[successUrlKey];
+                if (res.data) {
+                    // this.previewUrl = URL.createObjectURL(file.raw);
+                    this.localValue = res.data[successUrlKey] || res.data;
                     window.test = this.$refs.upload;
 
                     this.emitFormItemChange();
                 }
+                if (typeof props['on-success'] === 'function') {
+                    props['on-success'](res, file);
+                }
+            } else if (typeof props['on-error'] === 'function') {
+                props['on-error'](res, file);
             } else {
                 this.$message.error(`${res.msg}(${res.code})`);
             }
         },
         handleRemove() {
-            // 清空预览url
-            this.previewUrl = '';
             // 变更数据
             this.localValue = '';
             this.emitFormItemChange();
-
         },
         emitFormItemChange() {
             // todo：关注一下有可能element-ui会修复这个问题
@@ -149,7 +178,7 @@ export default {
             }
         },
         handleChoseFromList(url) {
-            this.localValue = this.previewUrl = url;
+            this.localValue = url;
         }
     }
 };
@@ -169,31 +198,25 @@ export default {
         line-height: 100px;
         overflow: hidden;
         &:hover {
-            border-color: #409eff;
             .edit-text {
                 display: block;
             }
-        }
-        img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
         }
         &.el-upload--picture-card{
             position: absolute;
             top: 0;
         }
-    }
-    .el-upload-list__item{
-        img{
-            object-fit: cover;
+        .el-image {
+            width: 100px;
+            height: 100px;
         }
     }
     .el-upload-list--picture-card{
         display: block;
         padding-top: 110px;
         line-height: 0;
-        .el-upload-list__item{
+        .el-upload-list__item,
+        .el-image {
             width: 100px;
             height: 100px;
         }
@@ -258,5 +281,30 @@ export default {
     .red{
         color: #c00;
     }
+}
+.ams-field-headimage {
+    .el-upload {
+        border-radius: 50%;
+    }
+    .el-icon-error {
+        top: 15px;
+        left: 85px;
+    }
+}
+
+.ams-field-image-fit-fill .el-upload-list .el-upload-list__item-thumbnail {
+    object-fit: fill;
+}
+.ams-field-image-fit-contain .el-upload-list .el-upload-list__item-thumbnail {
+    object-fit: contain;
+}
+.ams-field-image-fit-cover .el-upload-list .el-upload-list__item-thumbnail {
+    object-fit: cover;
+}
+.ams-field-image-fit-none .el-upload-list .el-upload-list__item-thumbnail {
+    object-fit: none;
+}
+.ams-field-image-fit-scale-down .el-upload-list .el-upload-list__item-thumbnail {
+    object-fit: scale-down;
 }
 </style>

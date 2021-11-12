@@ -7,17 +7,19 @@
         <ams-operations :name="name"
                         slot-name="searchs"></ams-operations>
 
+        <ams-blocks :blocks="block.slotBlocks.tableTop" />
+
         <el-form :model="data">
-            <el-table border
+            <el-table :border="isBorder"
                       :data="tableList"
                       @sort-change="handleSortChange"
                       @filter-change="handleFilterChange"
                       :span-method="handleSpanMethod"
                       v-on="on"
                       v-bind="block.props"
+                      :height="height"
                       v-loading="loading"
                       highlight-current-row>
-
 
                 <!-- 展开行表头 -->
                 <el-table-column v-if="expandRow && expandRow.valueKey" width="50" >
@@ -32,6 +34,9 @@
 
                 <!-- 含有多级表头配置 -->
                 <template v-if="tableColumn">
+                    <el-table-column v-if="block.props.type === 'index'"
+                                     type="index"
+                                     align="center" />
                     <el-table-column v-for="(column, index) in tableColumn"
                                     v-if="!column.hidden"
                                     :key="column.name || index"
@@ -46,7 +51,6 @@
                         <!-- 自定义表头  S-->
                         <template slot="header">
                             <SlotHeader :column="column" @handleCollapse="handleColumnCollapse" />
-
                         </template>
                         <!-- 自定义表头  E-->
 
@@ -57,6 +61,7 @@
                                         :value="scope.row[column.name]"
                                         :name="name"
                                         :path="`list[${scope.$index}].${column.name}`"
+                                        :context="scope.row"
                                         :class="`ams-field ams-field-${column.type}-${column.ctx}`">
                             </component>
                         </template>
@@ -89,6 +94,7 @@
                                                 :value="scope.row[item.name]"
                                                 :name="name"
                                                 :path="`list[${scope.$index}].${item.name}`"
+                                                :context="scope.row"
                                                 :class="`ams-field ams-field-${item.type}-${item.ctx}`">
                                     </component>
 
@@ -105,6 +111,7 @@
                                  fit
                                  fixed="right"
                                  min-width="140px"
+                                 :width="operationsWidth"
                                  align="center">
                     <template slot-scope="scope">
                         <ams-operations :name="name"
@@ -120,7 +127,7 @@
                        @current-change="handleCurrentChange"
                        :current-page.sync="data.page"
                        :page-size.sync="data.pageSize"
-                       layout="prev, sizes, pager, next, jumper"
+                       :layout="data.layout || 'prev, sizes, pager, next, jumper'"
                        background
                        align="right"
                        :total="data.total">
@@ -132,9 +139,10 @@
 
 <script>
 import mixins from '../../ams/mixins';
+import { operationsWidth } from '../../ams/mixins/computed';
 import { defaultListFieldWidth } from '../../ams/configs/field';
 import SlotHeader from './components/SlotHeader.vue';
-import { deepExtend } from '../../utils';
+import { addEvent, debounce, deepExtend } from '../../utils';
 
 export default {
     components: {
@@ -149,6 +157,7 @@ export default {
             options: {},
             sortField: null,
             sortOrder: null,
+            height: null,
 
             loading: false,
             tableList: [],          // data.list数据处理
@@ -162,16 +171,20 @@ export default {
         };
     },
     computed: {
+        isBorder() {
+            const props = this.block.props;
+            if (props && typeof props.border !== 'undefined') {
+                return props.border;
+            }
+            return true;
+        },
         tableColumn() {
             // option配置有多级表头
             if (this.block.options && this.block.options['table-column'] && this.block.options['table-column'].length) {
 
                 return this.handleTableColumn(this.block.options['table-column']);
             } else {
-
-                return this.handleTableColumn(
-                    Object.keys(this.fields).map(val => this.fields[val])
-                );
+                return this.handleTableColumn(Object.values(this.fields));
             }
         },
         expandRow() {
@@ -180,7 +193,8 @@ export default {
             } else {
                 return false;
             }
-        }
+        },
+        operationsWidth,
     },
     watch: {
         'data.list'(val, oldVal) {
@@ -192,6 +206,19 @@ export default {
         }
     },
     methods: {
+        afterReady() {
+            // 屏幕自适应
+            if (this.block.options && this.block.options.tableHeightFit) {
+                this.heightFit();
+
+                // 监听滚动事件
+                this.events.push(addEvent(window, 'resize', debounce(() => {
+                    this.heightFit();
+                }, 100)));
+            } else if (this.block.props && this.block.props.height) {
+                this.height = this.block.props.height;
+            }
+        },
         // 行展开或展开子表
         async handleRowClick(rowItem, rowIndex) {
 
@@ -462,7 +489,6 @@ export default {
 <style lang="scss">
 .ams-block-table {
     .slot-header-icon {
-        color:#409eff;
         margin-left:5px;
         cursor: pointer;
     }
@@ -472,17 +498,8 @@ export default {
     .el-slider__button-wrapper {
         z-index: 1;
     }
-
-    // .el-table td .cell div {
-    //     display: inline-flex;
-
-    // }
-
     .row-expand-cover .el-table__expand-column .cell {
         display: none;
     }
-
 }
-
-
 </style>

@@ -58,7 +58,7 @@ export const defaultFieldConfig = {
             props: {
                 expandTrigger: 'hover',
                 splitBy: '/',
-                checkStrictly: true
+                // checkStrictly: true
             }
         },
         get: getterCascader(getArray),
@@ -115,17 +115,6 @@ export const defaultFieldConfig = {
         view: viewFile,
         equals
     },
-    headimage: {
-        props: {
-            accept: 'image/*',
-            action: '',
-            'show-file-list': false
-        },
-        get,
-        set,
-        view,
-        equals
-    },
     image: {
         props: {
             accept: 'image/*',
@@ -142,7 +131,8 @@ export const defaultFieldConfig = {
         get,
         set,
         view,
-        equals
+        equals,
+        emptyEquel: false
     },
     password: {
         props: {
@@ -225,6 +215,7 @@ export const defaultFieldConfig = {
             clearable: true,
             type: 'textarea'
         },
+        default: '',
         get,
         set,
         view,
@@ -311,7 +302,6 @@ export const defaultListFieldWidth = {
     datetimerange: '340px',
     cascader: '250px',
     image: '120px',
-    headimage: '130px',
     file: '160px',
     progress: '150px',
     video: '200px',

@@ -1,3 +1,35 @@
 @import "./base.scss";
 @import "./router.scss";
 
+$primaryColor: #797EF5; // 主色调
+
+.ams-block-title .ams-title{
+    border-left-color: $primaryColor;
+}
+// 表格展开
+.ams-block-table .slot-header-icon{
+    color: $primaryColor;
+}
+// 图片上传
+.ams-field-image-edit {
+    .el-upload {
+        &:hover {
+            border-color: $primaryColor;
+        }
+    }
+}
+
+// 修复表单层级和路由层级冲突问题
+.ams-block-form .el-form-item .el-form-item__content {
+    z-index: 1;
+}
+
+// 修复配置主题后popconfirm的样式遗失问题
+.el-popconfirm__main {
+    display: flex;
+    align-items: center;
+}
+.el-popconfirm__action {
+    text-align: right;
+    margin: 0;
+}

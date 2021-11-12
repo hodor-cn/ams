@@ -2,6 +2,10 @@
 
 资源（resource）主要是用于描述接口的字段（field）组成以及请求配置参数，同一个资源可以被多个 `block` 共享使用
 
+<ClientOnly>
+<scrimba href="https://scrimba.com/c/cV8vRKuR" title="字段和区块" />
+</ClientOnly>
+
 ## 注册资源
 
 ```js
@@ -13,14 +17,29 @@ ams.resource(name: String, config: Object)
 
 ```js
 ams.resource('demo-resource', {
-    key: 'id', // 【非必须】标识该resource的keyName
+    key: 'id',
+    foreignKeys: ['testArrays'],
     api: { // 数据接口相关
         prefix: '//rap2api.taobao.org/app/mock/231578/ams/mock/',
         create: 'create',
         update: 'update',
         read: 'read',
         delete: 'delete',
-        list: 'list'
+        successCode: 1, // 作用于resource所有默认action
+        // list: 'list', 方法1
+        list: { // 方法2：可以给每个内置action单独配置path,method,successCode等
+            path: 'list',
+            method: 'post',
+            successCode: 1, // 只作用于当前action
+            // 所有内置action都有的方法
+            requestDataParse(data) {
+                return data
+            },
+            // 仅list和read有transform方法，用于在AMS赋值给区块前，转化接口返回数据，如果是list组件，这里的data代表的是data
+            responseDataParse({ code, data, msg }) {
+                return data
+            }
+        }
     },
     fields: { // 字段
         id: {
@@ -46,11 +65,13 @@ ams.resource('demo-resource', {
 
 - `key`： 【非必须】标识该resource的`keyName`，有些场景需要通过 `queryString` 传入，通过解析 `key=value` 获取
 
+- `foreignKeys`： 发起resource里的api接口时，可以附带传的参数，接收数组的字段格式，同`key`一样会通过`queryString` 传入
+
 - `api`： 对resource的一些内置方法，`prefix`为接口地址，目前提供了`create` `update` `read` `delete` `list` 几个内置请求方法
 
-- `fields`： resource里的详细的字段描述，点击前往[更深入的了解fields](/api/field.html)
+- `fields`： resource里的详细的字段描述，点击前往[更深入的了解fields](/field/)
 
-#### field通用配置
+## field通用配置
 
 | 参数 | 类型 | 是否必传 | 说明
 | -- | -- | -- | --
@@ -80,4 +101,6 @@ ams.block('demo', {
 });
 ```
 
+接下来，我们将介绍AMS另外一个核心概念`区块`
 
+[下一节：区块](/api/block.html)

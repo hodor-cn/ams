@@ -1,4 +1,5 @@
 import { Message } from 'element-ui';
+import { get as lodashGet } from 'lodash';
 
 export const resource = {
     // /**
@@ -27,19 +28,18 @@ export const resource = {
         // 全局默认withCredentials
         withCredentials: true,
         // 全局默认contentType json|form|multipart
-        contentType: 'json',
+        contentType: 'form',
         // 全局成功code
         successCode: 0
     },
 
     codes: {
         '-1701': function (res, options) {
-            if (res.data && res.data.data && res.data.data.redirectUrl) {
-                const split = res.data.data.redirectUrl.indexOf('?') >= 0 ? '&' : '?';
-                location.href = `${res.data.data.redirectUrl}${split}ams_redirect_url=${encodeURIComponent(location.href)}`;
-                return false;
-            }
-            return res;
+            const redirectUrl = lodashGet(res, 'data.data.redirectUrl');
+            if (!redirectUrl) return res;
+            const split = redirectUrl.includes('?') ? '&' : '?';
+            location.href = `${redirectUrl}${split}ams_redirect_url=${encodeURIComponent(location.href)}`;
+            return false;
         },
         '-1702': function (res, options) {
             Message.error(res.data && res.data.msg || '没有操作权限');

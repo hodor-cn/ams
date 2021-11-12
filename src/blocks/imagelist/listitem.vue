@@ -8,9 +8,10 @@
                         :context="image"></ams-operations>
              </div>
             <div :class="subtitleClass" v-if="subtitle">{{subtitle}}</div>
+            <div class="list-item-subscript" v-if="subscript">{{subscript}}</div>
         </div>
-        <figcaption>
-            <div class="s-left" :title="title">
+        <figcaption v-if="title || info">
+            <div class="s-left">
                 <el-checkbox v-if="showCheckbox" v-model="isSelect" :key="index" @change="$emit('selectionChange')" ></el-checkbox>
 
                 <span class="s-left-prefix" v-if="titlePrefixIcon" v-html="titlePrefixIcon">
@@ -18,7 +19,7 @@
                 <el-tag size="small" v-else-if="titlePrefixTag" :type="titlePrefixTag.type">{{titlePrefixTag.label}}</el-tag>
                 {{title}}
             </div>
-            <div class="s-right" v-if="info">{{info}}</div>
+            <div class="s-right" v-if="info" v-html="info"></div>
         </figcaption>
     </figure>
 </template>
@@ -89,11 +90,13 @@ export default {
             return this.image['imageText'];
         },
         title() {
-            if (this.block.options && this.block.options.title) {
+            if (this.block.options && typeof this.block.options.title !== 'undefined') {
                 if (this.block.options.title.field) {
                     return this.image[this.block.options.title.field];
+                } else if (typeof this.block.options.title === 'function') {
+                    return this.block.options.title(this.image);
                 }
-                return this.block.options.title(this.image);
+                return this.block.options.title;
             }
             return this.image['title'];
         },
@@ -125,10 +128,22 @@ export default {
             return this.image['subtitle'];
         },
         info() {
-            if (this.block.options && this.block.options.info && this.block.options.info.field) {
-                return this.image[this.block.options.info.field];
+            if (this.block.options && typeof this.block.options.info !== 'undefined') {
+                if (this.block.options.info.field) {
+                    return this.image[this.block.options.info.field];
+                }
+                return this.block.options.info;
             }
             return this.image['info'];
+        },
+        subscript() {
+            if (this.block.options && typeof this.block.options.subscript !== 'undefined') {
+                if (this.block.options.subscript.field) {
+                    return this.image[this.block.options.subscript.field];
+                }
+                return this.block.options.subscript;
+            }
+            return this.image['subscript'];
         }
     },
     watch: {
@@ -151,12 +166,17 @@ export default {
     max-width: 280px;
     border: 1px solid #EBEEF5;
     cursor: pointer;
+    // &:nth-child(4n) {
+    //     margin-right: 0;
+    // }
+    // &:last-child:nth-child(4n - 2) {
+    //     margin-right: calc(48% + 8% / 3);
+    // }
     &.is-always-shadow,&.is-hover-shadow:hover{
         box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
     }
     &-con{
         width: 100%;
-        overflow: hidden;
         position: relative;
         z-index: 1;
         height: 120px;
@@ -170,7 +190,6 @@ export default {
         }
         .list-item-subtitle {
             padding:5px 10px;
-            line-height: 22px;
             box-sizing: border-box;
             position: absolute;
             z-index: 2;
@@ -189,8 +208,9 @@ export default {
             -webkit-box-orient: vertical;
             transition: ease 0.3s;
             background-color: rgba(0, 0, 0, 0.5);
+            opacity: 0;
             &.is-hover-subtitle{
-                transform: translateY(100%);
+                transform: translateY(10%);
             }
         }
         .list-item-topright-operations{
@@ -200,10 +220,14 @@ export default {
             z-index: 2;
             top: 0;
             right: 0;
-            transform: translateY(-100%);
+            transform: translateY(-10%);
             transition: ease 0.3s;
+            opacity: 0;
             .el-form--inline .el-form-item{
                 margin-right: 5px;
+            }
+            .ams-operations .el-form-item__content{
+                line-height: initial;
             }
             .icon,.ams-operation-text {
                 border: 1px solid transparent;
@@ -232,11 +256,15 @@ export default {
                 &.ams-operation-text--danger{
                     color: #f56c6c;
                 }
+                &.is-disabled{
+                    opacity: 0.6;
+                    background-color: rgba(0, 0, 0, 0.5);
+                }
             }
         }
     }
     .is-image{
-        height: 150px;
+        height: 155px;
     }
     img{
         object-fit: cover;
@@ -246,6 +274,7 @@ export default {
         font-size: 12px;
         display: flex;
         line-height: 24px;
+        height: 45px;
         .s-left{
             flex: 1;
             height: 25px;
@@ -263,7 +292,22 @@ export default {
     &:hover{
         .is-hover-subtitle,.list-item-topright-operations{
             transform: translateY(0);
+            opacity: 1;
         }
+    }
+    &-subscript {
+        position: absolute;
+        z-index: 10;
+        right: 0;
+        bottom: 0;
+        color: #fff;
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 5px 7px;
+        line-height: 18px;
+        font-size: 12px;
+        max-width: 50%;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 }
 </style>

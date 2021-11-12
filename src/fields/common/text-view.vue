@@ -1,14 +1,58 @@
+<!--
+  以 fields: {
+    'status': {
+      'type': 'text',
+      'label': 'status',
+      view(fieldValue, field) {
+      return fieldValue > 0 ? `+${fieldValue}` : `-${fieldValue}`
+      },
+    },
+  }
+  为例：
+
+  `ams-field-${field.type}-${field.ctx}` === 'ams-field-text-view'
+
+  其中
+  field === {
+    "name": "status",
+    "ctx": "view",
+    "props": {
+      "clearable": true
+    },
+    "on": {},
+    "type": "text",
+    "label": "status",
+    "default": ""
+  }
+
+  value ==== 2
+  name(blockName) === 'dspListView'
+  path(第一行) === list[0].status
+ -->
+
 <template>
-    <div :style="field.style">{{ actualViewText }}<el-popover v-if="showMoreIcon"
+    <div :style="field.style" v-bind="field.props" v-on="on">
+        <vnode
+            v-if="field.render"
+            :render="field.render"
+            :scope="{
+                $createElement,
+                value,
+                field,
+                context,
+            }"
+        />
+        <div v-else v-html="actualViewText"></div>
+        <el-popover v-if="showMoreIcon"
                     :placement="field.collapsePlacement || 'right'"
                     :title="field.collapseTitle || ''"
                     :width="field.collapseWidth || 200"
-                    trigger="hover"
-                    :content="viewText">
+                    trigger="hover">
             <span slot="reference">... <el-tag size="mini" type="info">...</el-tag></span>
+            <div v-html="viewText"></div>
         </el-popover>
         <el-tooltip effect="dark" placement="top" v-if="suffixInfo">
-            <i :class="'el-icon-info ams-field-suffix-info ' + suffixInfoClass"></i>
+            <i :class="suffixIcon + ' ams-field-suffix-info ' + suffixInfoClass"></i>
             <div slot="content" v-html="suffixInfo"></div>
         </el-tooltip>
     </div>
@@ -19,7 +63,7 @@
 import mixins from '../../ams/mixins';
 
 export default {
-    mixins: [mixins.fieldViewMixin],
+    mixins: [mixins.fieldViewMixin, mixins.vnodeMixin],
     data() {
         return {
             suffixInfoClass: ''
@@ -44,6 +88,9 @@ export default {
                 return this.viewText.slice(0, this.showOptionsLimit);
             }
             return this.viewText;
+        },
+        suffixIcon() {
+            return this.field.props && this.field.props['suffix-icon'] || 'el-icon-info';
         },
         suffixInfo() {
             const info = this.field.props['suffix-info'];

@@ -1,11 +1,12 @@
 import ams from '@ams-team/ams';
+import { prefix } from '@/utils';
 
 ams.block('originfile', {
     resources: {
         'res-originfile': {
             api: {
-                prefix: 'http://xxx.com/crazybuy/',
-                create: 'editLabel/create',
+                prefix: prefix,
+                create: 'create',
                 contentType: 'json'
             },
             fields: {
@@ -40,8 +41,8 @@ ams.block('originfile', {
             }
         }
     },
-    type: 'form',
     ctx: 'edit',
+    type: 'form',
     resource: 'res-originfile',
     data: {
         name: 'wei测试',

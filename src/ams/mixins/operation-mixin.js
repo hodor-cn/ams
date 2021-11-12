@@ -1,4 +1,5 @@
 import ams from '..';
+import { tooltip, badge } from './computed';
 
 export default {
     props: {
@@ -27,46 +28,30 @@ export default {
             required: false
         }
     },
-
+    // src/ams/mixins/block-mixin.js
     inject: ['$block'],
 
     methods: {
         emit() {
             ams.$prevReturn = this.context;
-            this.$block.emitEvent(this.operation.event || this.operationKey);
+            const allowNoSelect = this.operation.props && this.operation.props.allowNoSelect;
+            const block = this.$block.block;
+            // 兼容block-list中配置multipleSelectAffixShow: true的情况
+            if (
+                block.type === 'list' &&
+                this.path === 'multipleSelect' &&
+                !allowNoSelect &&
+                Array.isArray(this.context) &&
+                !this.context.length) {
+                this.$message('已选择的数据项为空');
+                return;
+            }
+            this.$block.emitEvent(this.operation.event || this.operationKey, { operation: this.operation });
         }
     },
 
     computed: {
-        tooltip() {
-            const tooltip = this.operation.tooltip;
-            if (tooltip) {
-                if (typeof tooltip === 'string') return { effect: 'dark', placement: 'bottom', content: tooltip };
-                if (typeof tooltip === 'object') return tooltip;
-                return null;
-            }
-            return null;
-        },
-        badge() {
-            const badge = this.operation.badge;
-            if (badge) {
-                if (typeof badge.value === 'function') {
-                    let hidden = false;
-                    let value =  badge.value.call(this.$block || this, this.context);
-                    if (value === false) {
-                        // 隐藏dot类型
-                        value = '';
-                        hidden = true;
-                    }
-                    return {
-                        ...badge,
-                        value,
-                        hidden
-                    };
-                } else {
-                    return badge;
-                }
-            }
-        }
+        tooltip,
+        badge
     }
 };

@@ -11,11 +11,13 @@ import * as utils from './utils';
 import actions from './actions';
 
 // block
+import alert from './blocks/alert';
 import block from './blocks/block';
 import card from './blocks/card';
 import component from './blocks/component';
 import collapse from './blocks/collapse';
 import dialog from './blocks/dialog';
+import drawer from './blocks/drawer';
 import error from './blocks/error';
 import list from './blocks/list';
 import imagelist from './blocks/imagelist';
@@ -30,6 +32,7 @@ import grid from './blocks/grid';
 import carousel from './blocks/carousel';
 import backtop from './blocks/backtop';
 import popover from './blocks/popover';
+import popconfirm from './blocks/popconfirm';
 
 // field 和文件夹一一对应
 import array from './fields/array';
@@ -41,7 +44,6 @@ import date from './fields/date';
 import datetime from './fields/datetime';
 import datetimerange from './fields/datetimerange';
 import file from './fields/file';
-import headimage from './fields/headimage';
 import image from './fields/image';
 import inputnumber from './fields/inputnumber';
 import object from './fields/object';
@@ -64,6 +66,8 @@ import unitselect from './fields/unitselect';
 import video from './fields/video';
 import tree from './fields/tree';
 import link from './fields/link';
+import fbutton from './fields/button';
+import html from './fields/html';
 
 // operation
 import button from './operations/button';
@@ -72,9 +76,9 @@ import reset from './operations/reset';
 import icon from './operations/icon';
 import field from './operations/field';
 import dropdown from './operations/dropdown';
-
+import filter from './operations/filter';
 // 版本号
-ams.version = '0.18.4';
+ams.version = '0.33.0';
 // 挂载到ams上
 ams.mixins = mixins;
 ams.utils = utils;
@@ -101,11 +105,13 @@ ams.install = function(Vue) {
         ams.action(actionName, actions[actionName])
     );
     // blocks
+    ams.registerBlock(alert);
     ams.registerBlock(block);
     ams.registerBlock(card);
     ams.registerBlock(component);
     ams.registerBlock(collapse);
     ams.registerBlock(dialog);
+    ams.registerBlock(drawer);
     ams.registerBlock(error);
     ams.registerBlock(form);
     ams.registerBlock(list);
@@ -120,6 +126,7 @@ ams.install = function(Vue) {
     ams.registerBlock(carousel);
     ams.registerBlock(backtop);
     ams.registerBlock(popover);
+    ams.registerBlock(popconfirm);
 
     // fields
     ams.registerField(array);
@@ -131,7 +138,6 @@ ams.install = function(Vue) {
     ams.registerField(datetime);
     ams.registerField(datetimerange);
     ams.registerField(file);
-    ams.registerField(headimage);
     ams.registerField(image);
     ams.registerField(inputnumber);
     ams.registerField(object);
@@ -154,6 +160,8 @@ ams.install = function(Vue) {
     ams.registerField(video);
     ams.registerField(tree);
     ams.registerField(link);
+    ams.registerField(fbutton);
+    ams.registerField(html);
     // operations
     ams.registerOperation(button);
     ams.registerOperation(operationsText);
@@ -161,6 +169,7 @@ ams.install = function(Vue) {
     ams.registerOperation(icon);
     ams.registerOperation(field);
     ams.registerOperation(dropdown);
+    ams.registerOperation(filter);
 
     // inject vue prototype
     Vue.prototype.$ams = ams;

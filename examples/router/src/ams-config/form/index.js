@@ -2,12 +2,32 @@ import ams from '@ams-team/ams';
 
 ams.block('index', {
     blocks: {
+        indexTitle1: {
+            type: 'title',
+            options: {
+                title: '表单编辑状态'
+            },
+            style: {
+                width: '50%',
+                paddingRight: '2%'
+            }
+        },
+        indexTitle2: {
+            type: 'title',
+            options: {
+                title: '表单展示状态'
+            },
+            style: {
+                width: '49%'
+            }
+        },
         formEditAll: {
+            ctx: 'edit',
             type: 'form',
             resource: 'resource',
-            ctx: 'edit',
             style: {
-                width: '50%'
+                width: '50%',
+                paddingRight: '2%'
             },
             data: {
                 testRadio: 'c'
@@ -15,11 +35,17 @@ ams.block('index', {
             },
             events: {
                 init: '@read',
-                submit: '@validate @alert:我是一个alert @getAlert @getPrompt @confirm:确认提交吗? @update',
+                submit: '@getData @validate @alert:我是一个alert @getAlert @getPrompt @confirm:确认提交吗? @update',
                 cancel: '@cancel',
-                dialog: '@demo-dialog.show'
+                dialog: 'demo-dialog.show'
+            },
+            props: {
+                'label-bold': true // label 加粗
             },
             actions: {
+                getData({ $prevReturn }) {
+                    console.log('getData--', $prevReturn);
+                },
                 getAlert() {
                     // @alert:确认提交吗?
                     // 自定义数据通过options配置
@@ -68,7 +94,7 @@ ams.block('index', {
                         disabled: false,
                         'suffix-icon': 'ams-my-icon'
                     }
-                },
+                }
                 // testPassword: {
                 //     props: {
                 //         disabled: false
@@ -101,14 +127,14 @@ ams.block('index', {
                 setTimeout(() => {
                     console.log('resolve formViewAll');
                     resolve({
+                        ctx: 'view',
                         type: 'form',
                         resource: 'resource',
-                        ctx: 'view',
+                        style: {
+                            width: '49%'
+                        },
                         data: {
                             testRadio: 'c'
-                        },
-                        style: {
-                            width: '50%'
                         },
                         events: {
                             init: '@read @console'
@@ -125,17 +151,24 @@ ams.block('index', {
         'demo-dialog': {
             type: 'dialog',
             data: {
-                title: 'dialog标题'
-                // visible: false
+                title: '弹窗标题'
             },
             events: {
                 submit: 'dialogFormEdit.submit @hide',
-                show: '@show @dialogFormEdit.test'
+                show: '@show @loading @dialogFormEdit.test'
             },
             props: {
                 // fullscreen: true
+                // 'append-to-body': true
             },
-            actions: {},
+            actions: {
+                loading: function() {
+                    this.showLoading();
+                    setTimeout(() => {
+                        this.hideLoading();
+                    }, 5000);
+                }
+            },
             operations: {
                 submit: {
                     type: 'button',
@@ -151,9 +184,9 @@ ams.block('index', {
             },
             blocks: {
                 dialogFormEdit: {
+                    ctx: 'edit',
                     type: 'form',
                     resource: 'resource',
-                    ctx: 'edit',
                     events: {
                         init: '@read',
                         submit: '@validate @update'

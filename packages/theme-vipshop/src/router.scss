@@ -5,7 +5,46 @@ $sidebarTextColor: #90939a; // 菜单字体颜色
 $sidebarActiveTextColor: #797ef4; // 当前菜单字体颜色
 
 .ams-block-router {
+    .ams-navbar {
+        background-image: linear-gradient(90deg, #686EE8 0%, #8268E8 100%);
+        color: #fff;
+        height: 64px;
+        line-height: 64px;
+        margin-left: 0;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1002;
+        padding-left: 0;
+        .hamburger {
+            width: 80px;
+            text-align: center;
+            transition: 0s;
+            &:hover {
+                background: rgba(0,0,0,0.14);
+            }
+        }
+        .logo,h1{
+            display: inline-block;
+        }
+        .right-menu {
+            font-size: 14px;
+            .login-out {
+                font-size: 14px;
+                color: #fff;
+            }
+        }
+        .avatar-name {
+            color: #fff;
+            &::after {
+                background-color: #fff;
+                opacity: 0.3;
+            }
+        }
+    }
     .sidebar-container {
+        padding-top: 64px;
         .el-menu {
             background-color: $sidebarBg;
         }
@@ -19,12 +58,24 @@ $sidebarActiveTextColor: #797ef4; // 当前菜单字体颜色
             }
         }
     }
+    .app-breadcrumb{
+        margin-top: 64px;
+        position: initial;
+    }
+    .main-container-nobreadcrumb{
+        margin-top: 64px;
+    }
     .sidebar-container .nest-menu .el-submenu > .el-submenu__title,
     .sidebar-container .el-submenu .el-menu-item {
         background-color: $sidebarHoverBg;
         &.is-active, &:hover, &:focus{
             color: $sidebarActiveTextColor;
             background-color: $sidebarSubmenuHoverBg;
+        }
+    }
+    &.hideSidebar {
+        .ams-navbar {
+            margin-left: 0;
         }
     }
 }

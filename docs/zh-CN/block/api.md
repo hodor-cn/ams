@@ -9,7 +9,7 @@ API: API 配置
 - 类型：`string`
 - 默认值：`undefined`
 
-定义表单类型的block，目前可用类型有`form` `list` `dialog`
+定义区块的类型，目前可用类型有表单`form`、列表`list`、弹窗`dialog`、网格布局`Grid`等等
 
 ## resource
 
@@ -42,6 +42,15 @@ API: API 配置
 优先级2：检查注册的resource中对应的field是否有`ctx`，如果有则应用
 
 优先级3：使用默认field的props。附默认列表
+
+## show
+
+- 类型: `boolean | function`
+- 默认值: `undefined`
+
+控制整个block的显示状态，如果show最终值为false则不渲染改组件
+
+show可以接受`function`类型，接收两个参数`block`（指向block的实例) `data`（指向block.data），返回值需是`boolean`值
 
 ## style
 
@@ -95,7 +104,7 @@ data: {
 
 ## events
 
-详见[event 与 action](../api/action.md)
+详见[event 与 action](../block/action.md)
 
 - 类型：`object且{ [field: string]: string }`
 - 默认值：`undefined`
@@ -124,7 +133,7 @@ events: {
 
 ## actions
 
-详见[event 与 action](../api/action.md)
+详见[event 与 action](../block/action.md)
 
 - 类型：`{ function({ name: string, value: any }): void }`
 - 默认值：`undefined`
@@ -144,7 +153,7 @@ actions: {
 
 内置的action有详见：
 
-[event 与 action](../api/action.md)
+[event 与 action](../block/action.md)
 
 可以自定义actions，可被`events`中使用，如果定义跟内置action同名则会覆盖默认提供方法，异步操作需要返回 `Promise` 或者使用 `async 函数`
 
@@ -194,6 +203,8 @@ fields: {
 `event`代表点击该按钮时，会触发的event同名事件
 
 `show`代表按钮出现的条件，可以配置string或者function(content)，content是按钮所在行的数据
+
+`changeConfig` 可以对该字段的配置做处理，接受function(field, context)，其中field是指该字段的配置，content是按钮所在行的数据
 
 ```js
 operations: {
@@ -284,6 +295,9 @@ operations: {
     tooltip: '审核通过',
     show(context) {
       return context.status !== ActivitiesAuditStatus.Draft ? context.operations.allow_audit : false
+    },
+    changeConfig(field, context) {
+      return field
     }
   },
   reject: {
@@ -321,7 +335,7 @@ operations: {
 
 上述例子中，当点击submit按钮时，会调用`events`中的同名events方法，若没有绑定同名event则调用同名action
 
-点击前往[更多operations相关介绍](/api/operation.html)
+点击前往[更多operations相关介绍](/api/deep-operation.html)
 
 ## blocks
 
@@ -381,98 +395,6 @@ adminEditDialog: {
 
 若`render`值根据`document.querySelector(render)`能查询到，则创建一个在该DOM结构下的`ams-block`
 
-## filters (list) <Badge text="list独有"/>
-
-- 类型：`object`
-- 默认值：`{}`
-
-***block的type为`list`时独有字段***
-
-设置列表的过滤条件，如
-
-```js
-filters: {
-    testCheckbox: {
-        multiple: false,
-        remote: true
-    },
-    testSelect: {
-        multiple: true,
-        remote: false
-    }
-}
-
-// `multiple` 表示是否支持多选，boolean值
-// `remote`   表示是否支持远程过滤，boolean值
-```
-
-## sorts (list) <Badge text="list独有"/>
-
-- 类型：`object且{ [field: string]: boolean }`
-- 默认值：`{}`
-
-***block的type为`list`时独有字段***
-
-列表排序设置，如
-```js
-sorts: {
-    testInputnumber: true
-}
-```
-
-## searchs (list) <Badge text="list独有"/>
-
-- 类型：`object且{ [field: string]: boolean }`
-- 默认值：`undefined`
-
-***block的type为`list`时独有字段***
-
-列表搜索设置，如
-```js
-searchs: {
-    testText: true,
-    testTextarea: true
-}
-```
-
-## searchsOptions (list) <Badge text="list独有"/>
-
-- 类型：`object`
-- 默认值：`undefined`
-
-***block的type为`list`时独有字段***
-
-列表的搜索栏添加操作项，目前type只有`button`类型，如
-```js
-searchsOptions: {
-    addItem: {
-        type: 'button',
-        label: '添加',
-        props: {
-            type: 'primary'
-        }
-    }
-}
-```
-
-## pageSize (list) <Badge text="list独有"/>
-
-- 类型：`number`
-- 默认值：`20`
-
-***block的type为`list`时独有字段***
-
-设置分页时每页的条数，赋值优先级为`block.data.pageSize` -> `block.pageSize`
-
-
-## router (router) <Badge text="router独有"/>
-
-- 类型：`object`
-- 默认值：`undefined`
-
-***block的type为`router`时独有字段***
-
-
 ## options
 
 - 类型：`object`
@@ -528,3 +450,60 @@ options: {
 - 默认值：`undefined`
 
 主要是用来透传Element组件的方法配置，详见各种block的配置。
+
+
+## filters <Badge text="list独有"/>
+
+- 类型：`object`
+- 默认值：`{}`
+
+***block的type为`list`时独有字段***
+
+设置列表的过滤条件，如
+
+```js
+filters: {
+    testCheckbox: {
+        multiple: false,
+        remote: true
+    },
+    testSelect: {
+        multiple: true,
+        remote: false
+    }
+}
+
+// `multiple` 表示是否支持多选，boolean值
+// `remote`   表示是否支持远程过滤，boolean值
+```
+
+## sorts <Badge text="list独有"/>
+
+- 类型：`object且{ [field: string]: boolean }`
+- 默认值：`{}`
+
+***block的type为`list`时独有字段***
+
+列表排序设置，如
+```js
+sorts: {
+    testInputnumber: true
+}
+```
+
+## pageSize <Badge text="list独有"/>
+
+- 类型：`number`
+- 默认值：`20`
+
+***block的type为`list`时独有字段***
+
+设置分页时每页的条数，赋值优先级为`block.data.pageSize` -> `block.pageSize`
+
+
+## router <Badge text="router独有"/>
+
+- 类型：`object`
+- 默认值：`undefined`
+
+***block的type为`router`时独有字段***

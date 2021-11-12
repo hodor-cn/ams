@@ -5,7 +5,7 @@ ams.block('carousel', {
         carousel1Title: {
             type: 'title',
             options: {
-                'title': '普通文案竖排'
+                title: '普通文案竖排'
             }
         },
         carousel1: {
@@ -16,7 +16,7 @@ ams.block('carousel', {
                 name3: '33333'
             },
             style: {
-                'background-color': '#d3dce6',
+                'background-color': '#d3dce6'
             },
             props: {
                 direction: 'vertical'
@@ -25,7 +25,7 @@ ams.block('carousel', {
         carousel2Title: {
             type: 'title',
             options: {
-                'title': '普通文案横排（高度200px）'
+                title: '普通文案横排（高度200px）'
             }
         },
         carousel2: {
@@ -43,7 +43,7 @@ ams.block('carousel', {
         carousel3title: {
             type: 'title',
             options: {
-                'title': '带按钮横排'
+                title: '带按钮横排'
             }
         },
         carousel3: {
@@ -87,7 +87,7 @@ ams.block('carousel', {
         carousel4title: {
             type: 'title',
             options: {
-                'title': '嵌套blocks'
+                title: '嵌套blocks'
             }
         },
         carousel4: {
@@ -147,7 +147,7 @@ ams.block('carousel', {
         carousel5title: {
             type: 'title',
             options: {
-                'title': '卡片化'
+                title: '卡片化'
             }
         },
         carousel5: {
@@ -203,6 +203,65 @@ ams.block('carousel', {
             },
             style: {
                 'background-color': '#d3dce6'
+            }
+        },
+        carousel6title: {
+            type: 'title',
+            options: {
+                title: '图片'
+            }
+        },
+        carousel6: {
+            type: 'carousel',
+            options: {
+                carouselBlock1: '11111',
+                carouselBlock2: '22222',
+                carouselBlock3: '33333'
+            },
+            props: {
+                type: 'card',
+                'item-type': 'block'
+            },
+            blocks: {
+                carouselBlock61: {
+                    type: 'component',
+                    options: {
+                        is: 'img'
+                    },
+                    props: {
+                        src: 'http://b.appsimg.com/upload/vivaadmin/2018/11/07/69/1541579376290922128.png'
+                    },
+                    style: {
+                        height: '100%',
+                        'object-fit': 'contain'
+                    }
+                },
+                carouselBlock62: {
+                    type: 'component',
+                    options: {
+                        is: 'img'
+                    },
+                    props: {
+                        src: 'http://b.appsimg.com/upload/vivaadmin/2018/11/07/69/1541579376290922128.png'
+                    },
+                    style: {
+                        height: '100%',
+                        'object-fit': 'contain'
+                    }
+                },
+                carouselBlock63: {
+                    type: 'component',
+                    options: {
+                        is: 'img'
+                    },
+                    props: {
+                        src: 'http://b.appsimg.com/upload/vivaadmin/2018/11/07/69/1541579376290922128.png'
+                    },
+                    style: {
+                        height: '100%',
+                        'object-fit': 'contain'
+                    }
+                }
             }
         }
     }

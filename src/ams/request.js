@@ -1,4 +1,5 @@
 import { serialize, deepExtend } from '../utils';
+export const httpRequestTypeExcludeGet = ['POST', 'PUT', 'DELETE', 'PATCH'];
 
 export default function initRequest(ams) {
     let escape = encodeURIComponent;
@@ -24,7 +25,7 @@ export default function initRequest(ams) {
             let val = obj[key];
             val = val == null ? '' : val;
             if (typeof val === 'object') {
-                if (val instanceof window.File) {
+                if (val instanceof window.File || val instanceof window.Blob) {
                     formData.append(key, val);
                 } else {
                     formData.append(key, JSON.stringify(val));
@@ -46,6 +47,7 @@ export default function initRequest(ams) {
         params, {a: 1},
         withCredentials: true,
         contentType: true,
+        responseType: '',
         headers: {'X-Custom-Header': 'foobar'}
     });
     */
@@ -63,7 +65,8 @@ export default function initRequest(ams) {
                 params,
                 headers = {},
                 withCredentials = ams.configs.withCredentials,
-                contentType = ams.configs.contentType
+                contentType = ams.configs.contentType,
+                responseType = ams.configs.responseType || '',
             } = options;
 
             const xhr = new XMLHttpRequest();
@@ -82,7 +85,7 @@ export default function initRequest(ams) {
 
             // 处理sendData
             // 可用contentType： json|form|multipart
-            if (method === 'POST') {
+            if (httpRequestTypeExcludeGet.indexOf(method) >= 0) {
                 if (contentType === 'json') {
                     headers['Content-Type'] =
                         headers['Content-Type'] ||
@@ -102,6 +105,28 @@ export default function initRequest(ams) {
             Object.keys(headers).forEach(key => {
                 xhr.setRequestHeader(key, headers[key]);
             });
+
+            const { errorInterceptor } = ams.configs.resource || (err => {
+                throw err;
+            });
+
+            function handleError(err, response) {
+                // 没服务器返回的错误状态码会置为0
+                err.code = xhr.status || 0;
+                err.response = response;
+                err.options = options;
+
+                try {
+                    const response = errorInterceptor(err);
+                    if (response) {
+                        resolve(response);
+                    } else {
+                        reject(new Error('cancel by error interceptor'));
+                    }
+                } catch (e) {
+                    reject(e);
+                }
+            }
 
             xhr.onreadystatechange = function() {
                 // console.log('onreadystatechange', xhr.readyState, xhr.status);
@@ -141,14 +166,30 @@ export default function initRequest(ams) {
                         }
 
                     } else {
-                        reject(new Error(xhr.status));
+                        const response = {
+                            status: xhr.status,
+                            content: xhr.responseText,
+                            // 默认不放data，本来默认是个对象就是不对，但旧API不能改，只能另写一段
+                        };
+                        try {
+                            response.data = JSON.parse(xhr.responseText);
+                        } catch (e) {}
+
+                        // 仅当status不为0时才走这里的错误逻辑，否则会和onerror走2次逻辑
+                        if (xhr.status !== 0) {
+                            handleError(new Error(`${xhr.status}`), response);
+                        }
                     }
                 }
             };
-            xhr.onerror = reject;
+            xhr.onerror = function() {
+                handleError(new Error('network error'));
+            };
 
             // withCredentials默认为true
             xhr.withCredentials = withCredentials;
+
+            xhr.responseType = responseType;
 
             xhr.send(sendData);
         });
@@ -228,16 +269,16 @@ export default function initRequest(ams) {
                 }
                 const res = await ams.request(requestOptions);
 
-                (params.success || options.success).call(
+                this.hideLoading();
+
+                return (params.success || options.success).call(
                     this,
                     res,
                     requestOptions
                 );
 
-                this.hideLoading();
             } catch (e) {
-                // 处理完继续抛出错误使aciton中断
-
+                // 处理完继续抛出错误使 action 中断
                 this.hideLoading();
                 throw e;
             }

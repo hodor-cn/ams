@@ -1,11 +1,17 @@
 import ams from '@ams-team/ams';
 import { prefix } from '@/utils';
 
+const upload = `${prefix}upload-image`;
 const datas = {};
 
 ams.block('image', {
     resources: {
         image: {
+            api: {
+                prefix: prefix,
+                create: 'create',
+                contentType: 'json'
+            },
             fields: {
                 image1: {
                     label: '默认图片上传',
@@ -21,7 +27,8 @@ ams.block('image', {
                     },
                     default: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
                     props: {
-                        action: `${prefix}upload-image`,
+                        action: upload,
+                        fit: 'contain',
                         'list-type': 'picture-card',
                         'show-file-list': true,
                         'file-list': [{
@@ -44,13 +51,30 @@ ams.block('image', {
                         }
                     ]
                 },
+                defaultImageList: {
+                    label: '可选图片',
+                    type: 'image',
+                    props: {
+                        fit: 'contain',
+                        'default-image-list': [
+                            {
+                                name: 'img1',
+                                url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
+                            },
+                            {
+                                name: 'img2',
+                                url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
+                            }
+                        ]
+                    }
+                },
                 image4: {
                     label: '固定尺寸',
                     type: 'image',
                     tip: '640x640',
                     successUrlKey: 'url',
                     props: {
-                        action: `${prefix}upload-image`,
+                        action: upload,
                         'show-file-list': true,
                         'file-list': [{
                             'name': 'food.jpeg',
@@ -67,7 +91,7 @@ ams.block('image', {
                     tip: '640x640',
                     successUrlKey: 'url',
                     props: {
-                        action: `${prefix}upload-image`,
+                        action: upload,
                         'list-type': 'picture-card',
                         'show-file-list': true,
                         'file-list': [{
@@ -85,7 +109,7 @@ ams.block('image', {
                     tip: '640x640',
                     successUrlKey: 'url',
                     props: {
-                        action: `${prefix}upload-image`,
+                        action: upload,
                         'list-type': 'picture',
                         'show-file-list': true,
                         'file-list': [{
@@ -103,7 +127,7 @@ ams.block('image', {
                     tip: '范围640-640',
                     successUrlKey: 'url',
                     props: {
-                        action: `${prefix}upload-image`,
+                        action: upload,
                         'default-image-list': []
                     }
                 },
@@ -112,7 +136,7 @@ ams.block('image', {
                     type: 'image',
                     successUrlKey: 'url',
                     props: {
-                        action: `${prefix}upload-image`,
+                        action: upload,
                         'default-image-list': [{
                             'name': '精选',
                             'url': 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
@@ -134,9 +158,21 @@ ams.block('image', {
                     type: 'image',
                     tip: '只能上传png文件',
                     successUrlKey: 'url',
+                    default: 'http://static.699pic.com/best_album/25.jpg',
                     props: {
                         accept: 'image/png',
-                        action: `${prefix}upload-image`
+                        action: upload
+                    }
+                },
+                image9: {
+                    label: '头像',
+                    type: 'image',
+                    tip: '只能上传png文件',
+                    successUrlKey: 'url',
+                    props: {
+                        accept: 'image/png',
+                        // action: upload,
+                        headimage: true
                     }
                 }
             }
@@ -144,13 +180,13 @@ ams.block('image', {
     },
     blocks: {
         editImage: {
-            data: datas,
+            ctx: 'edit',
             type: 'form',
             resource: 'image',
-            ctx: 'edit',
             style: {
                 width: '50%'
             },
+            data: datas,
             events: {
                 submit: '@validate @create'
             },
@@ -162,10 +198,10 @@ ams.block('image', {
             }
         },
         viewImage: {
-            data: datas,
+            ctx: 'view',
             type: 'form',
             resource: 'image',
-            ctx: 'view',
+            data: datas,
             style: {
                 width: '50%'
             }

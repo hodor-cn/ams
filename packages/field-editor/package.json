@@ -1,9 +1,9 @@
 {
     "name": "@ams-team/field-editor",
-    "version": "0.2.5",
+    "version": "0.3.0",
     "main": "lib/field-editor.js",
     "unpkg": "lib/field-editor.js",
-    "author": "edward.shao",
+    "author": "ams",
     "description": "富文本编辑器",
     "amsConfig": {
         "externals": {

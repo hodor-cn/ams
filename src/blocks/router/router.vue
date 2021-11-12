@@ -1,6 +1,8 @@
 <template>
     <ams-router v-if="ready && routerReady"
-                class="ams-block-router" />
+                v-loading="loading"
+                class="ams-block-router"
+                v-bind="block.props"/>
 </template>
 
 <script>
@@ -52,6 +54,9 @@ export default {
             overflow-x: hidden !important;
             .el-scrollbar__view {
                 height: 100%;
+                > .el-menu {
+                    padding-top: 15px;
+                }
             }
         }
         .el-scrollbar__bar.is-vertical {
@@ -73,20 +78,11 @@ export default {
             min-height: 100%;
             width: 100% !important;
         }
-        // .is-active > .el-submenu__title {
-        //     color: #f4f4f5 !important;
-        // }
         .ams-blocks{
             font-size: 16px;
         }
     }
     &.hideSidebar {
-        // .sidebar-container {
-        //     width: 80px !important;
-        // }
-        // .main-container {
-        //     margin-left: 80px;
-        // }
         .submenu-title-noDropdown {
             padding-left: 10px !important;
             position: relative;
@@ -115,14 +111,6 @@ export default {
                     }
                 }
             }
-        }
-        .el-menu {
-            // .el-menu-item{
-            //     padding-left: 6px !important;
-            // }
-            // .el-tooltip{
-            //     left: -14px !important;
-            // }
         }
     }
     &.withoutAnimation {

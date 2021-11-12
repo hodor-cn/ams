@@ -20,12 +20,12 @@ ams.block('array-object', {
                         text: {
                             type: 'text',
                             label: 'rule2',
-                            desc: `只能上传jpg/png文件，且不超过500kb`,
+                            labelWidth: '100px',
                             props: {
                                 clearable: false
                             },
-                            labelWidth: '100px',
                             info: '<p>info</p>1',
+                            desc: `只能上传jpg/png文件，且不超过500kb`,
                             changeConfig(field, context) {
                                 console.log(field, context);
                                 return field;
@@ -35,12 +35,29 @@ ams.block('array-object', {
                             type: 'date',
                             label: 'date',
                             labelWidth: '100px'
+                        },
+                        testButton: {
+                            type: 'button',
+                            label: '按钮',
+                            labelWidth: '0',
+                            props: {
+                                size: 'medium',
+                                type: 'primary'
+                            },
+                            tooltip: '提示信息',
+                            badge: {
+                                value: function(data) {
+                                    console.log('data', data);
+                                    return true;
+                                }
+                            },
+                            event: 'submit2'
                         }
                     },
                     props: {
                         align: 'left',
                         'header-align': 'center'
-                    },
+                    }
                 },
                 mutiObject: {
                     type: 'object',
@@ -72,8 +89,21 @@ ams.block('array-object', {
                                 type: 'array',
                                 label: 'array',
                                 field: {
-                                    type: 'text',
-                                    label: 'text'
+                                    type: 'button',
+                                    label: '按钮',
+                                    // labelWidth: '0',
+                                    props: {
+                                        size: 'medium',
+                                        type: 'primary'
+                                    },
+                                    tooltip: '提示信息',
+                                    badge: {
+                                        value: function(data) {
+                                            console.log('array-data', data);
+                                            return true;
+                                        }
+                                    },
+                                    event: 'submit2'
                                 }
                             }
                         },
@@ -101,24 +131,24 @@ ams.block('array-object', {
                                             }
                                         ]
                                     },
-                                    'selectA': {
-                                        'type': 'select',
-                                        'label': '对比',
-                                        'props': {
-                                            'multiple': false,
-                                            'options': {
+                                    selectA: {
+                                        type: 'select',
+                                        label: '对比',
+                                        props: {
+                                            multiple: false,
+                                            options: {
                                                 '0': '昨天',
                                                 '1': '今天',
                                                 '5': '不对比'
                                             }
                                         }
                                     },
-                                    'selectB': {
-                                        'type': 'select',
-                                        'label': '条件',
-                                        'props': {
-                                            'multiple': false,
-                                            'options': {
+                                    selectB: {
+                                        type: 'select',
+                                        label: '条件',
+                                        props: {
+                                            multiple: false,
+                                            options: {
                                                 '0': '同比下降',
                                                 '1': '同比上升'
                                             }
@@ -138,6 +168,23 @@ ams.block('array-object', {
                                     date: {
                                         type: 'date',
                                         label: 'date'
+                                    },
+                                    testButton: {
+                                        type: 'button',
+                                        label: '按钮',
+                                        labelWidth: '0',
+                                        props: {
+                                            // size: 'mini',
+                                            type: 'primary'
+                                        },
+                                        tooltip: '提示信息',
+                                        badge: {
+                                            value: function(data) {
+                                                console.log('ArrayObject-data', data);
+                                                return true;
+                                            }
+                                        },
+                                        event: 'submit2'
                                     }
                                 }
                             }
@@ -153,7 +200,12 @@ ams.block('array-object', {
                     },
                     field: {
                         type: 'text',
-                        label: 'text'
+                        label: 'text',
+                        on: {
+                            click: function(ev, $field) {
+                                console.log(this, ev, $field);
+                            }
+                        }
                     }
                 },
                 ArrayArray: {
@@ -187,9 +239,9 @@ ams.block('array-object', {
     },
     blocks: {
         arrayEdit: {
+            ctx: 'edit',
             type: 'form',
             resource: 'arrayObject',
-            ctx: 'edit',
             events: {
                 init: '@read',
                 submit: '@validate @create'
@@ -199,20 +251,25 @@ ams.block('array-object', {
                     type: 'button',
                     label: '提交'
                 }
+            },
+            actions: {
+                submit2({ $prevReturn }) {
+                    console.log('button-field-submit', $prevReturn);
+                }
             }
         },
         arrayView: {
+            ctx: 'view',
             type: 'form',
             resource: 'arrayObject',
-            ctx: 'view',
             events: {
-                init: '@read',
-            },
+                init: '@read'
+            }
         },
         arrayList: {
+            ctx: 'view',
             type: 'list',
             resource: 'arrayObject',
-            ctx: 'view',
             events: {
                 init: '@list'
             }

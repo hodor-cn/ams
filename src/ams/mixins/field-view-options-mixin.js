@@ -8,18 +8,28 @@ export default {
     computed: {
         selectOptions() {
             let arr = [];
-            if (this.value || this.value === 0) {
-                let val = this.field.view ? this.field.view(this.value, this.field) : this.value;
-                const vals = String(val).split(',');
-                // let options = this.field.props.options;
+            const field = this.field || {};
+            const props = field.props || {};
+            if (typeof this.value !== 'undefined') {
+                // 使用typeof判断是为了兼容当值为空或者0的情况
+                let val = field.view ? field.view(this.value, this.field, this.context) : this.value;
+                let vals = '';
+                const splitBy = props.splitBy;
+                if (val && splitBy && val === splitBy) {
+                    vals = [splitBy];
+                } else {
+                    vals = String(val).split(splitBy || ',');
+                }
                 let options = {};
-                if (Array.isArray(this.field.props.options)) {
-                    this.field.props.options.forEach(item => {
+                if (Array.isArray(props.options)) {
+                    props.options.forEach(item => {
                         options[item.value] = item.label;
                     });
-                    // console.log(options);
+                } else if (props.autoOptions && vals.filter(i => i).length) {
+                    // 自动使用vals来构造options
+                    options = vals.map(item => ({ label: item, value: item }));
                 } else {
-                    options = this.field.props.options || {};
+                    options = props.options || {};
                 }
                 vals.forEach(val => {
                     arr.push(options.hasOwnProperty(val) ? options[val] : val);
@@ -41,10 +51,10 @@ export default {
             if (this.showMoreIcon) {
                 return this.selectOptions.slice(0, this.showOptionsLimit).join('，');
             }
-            return this.selectOptionsPlainText;
-        },
-        selectOptionsPlainText() {
             return this.selectOptions.join('，');
+        },
+        dropdownOptions() {
+            return this.selectOptions.slice(this.field.collapseLimit);
         }
     },
 

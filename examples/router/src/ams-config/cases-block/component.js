@@ -2,8 +2,8 @@ import ams from '@ams-team/ams';
 
 ams.block('component', {
     data: {
-        'selectView': 'aaaa.bbb',
-        'selectEdit': 'aaaa.bbb'
+        selectView: 'aaaa.bbb',
+        selectEdit: 'aaaa.bbb'
     },
     blocks: {
         componentDiv: {
@@ -22,7 +22,9 @@ ams.block('component', {
                 }
             },
             actions: {
-                init() { console.log('init') },
+                init() {
+                    console.log('init');
+                },
                 test() { console.log('test') }
             },
             blocks: {

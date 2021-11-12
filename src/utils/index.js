@@ -2,6 +2,11 @@ export * from './uri';
 export * from './date';
 export * from './dom';
 export * from './function';
+export * from './tools';
+export * from './localstorage';
+export * from './type';
+export * from './loader';
+export * from './list';
 
 export function get(object, path) {
     path = path.split('.');
@@ -54,121 +59,4 @@ export function set(object, path, value) {
         return false;
     }
     // console.log('object', object)
-}
-
-
-export function getType(obj) {
-    return Object.prototype.toString
-        .call(obj)
-        .replace(/^\[\w+ (\w+)\]$/, '$1')
-        .toLowerCase();
-}
-
-export function serialize(params, obj, scope) {
-    let type;
-    let array = Array.isArray(obj);
-    let hash = getType(obj) === 'object';
-
-    Object.keys(obj).forEach(function(key) {
-        let value = obj[key];
-        type = getType(value);
-        if (scope) { key =
-                scope +
-                '[' +
-                (hash || type === 'object' || type === 'array' ? key : '') +
-                ']'; }
-        // handle data in serializeArray() format
-        if (!scope && array) { params.add(value.name, value.value) }
-        // recurse into nested objects
-        else if (type === 'array' || type === 'object') { serialize(params, value, key) }
-        else { params.add(key, value) }
-    });
-}
-
-export function listStringHasValue(list, value) {
-    return list && String(list).split(',').indexOf(value) >= 0;
-}
-
-export function listRemoveItem(list, item) {
-    if (list) {
-        const index = list.indexOf(item);
-        if (index > -1) {
-            list.splice(index, 1);
-        }
-    }
-}
-
-// 深度合并对象
-export function deepExtend(destination, source) {
-    const type = getType(source);
-    if (type === 'object' || type === 'array') {
-        for (let property in source) {
-            if (source.hasOwnProperty(property)) {
-                let old = destination[property];
-                let obj = source[property];
-                let oldType = getType(old);
-                let objType = getType(obj);
-                if (objType === 'object') {
-                    const target = oldType === 'object' ? old : {};
-                    destination[property] = deepExtend(target, obj);
-                } else if (objType === 'array') {
-                    const target = oldType === 'array' ? old : [];
-                    destination[property] = deepExtend(target, obj);
-                } else {
-                    destination[property] = source[property];
-                }
-            }
-        }
-    }
-    return destination;
-}
-
-// 按照优先级取值，如果是undefined获取下一个
-export function getByOrder(...args) {
-    let i = 0;
-    for (; i < args.length - 1; i++) {
-        if (typeof args[i] !== 'undefined') {
-            return args[i];
-        }
-    }
-    return args[i];
-}
-
-
-/**
- * 加载js
- * @url 需要加载的js链接
- */
-export function loadJS(url) {
-    return new Promise(function(resolve, reject) {
-        const script = document.createElement('script');
-        script.type = 'text/javascript';
-
-        if (script.readyState) { // IE
-            script.onreadystatechange = function() {
-                if (script.readyState === 'loaded' ||
-                        script.readyState === 'complete') {
-                    script.onreadystatechange = null;
-                    resolve({
-                        code: 0,
-                        msg: 'success: ' + url
-                    });
-                }
-            };
-        } else { // Others
-            script.onload = function() {
-                resolve({
-                    code: 0,
-                    msg: 'success: ' + url
-                });
-            };
-        }
-
-        script.onerror = function() {
-            reject(Error(url + 'load error!'));
-        };
-
-        script.src = url;
-        document.body.appendChild(script);
-    });
 }

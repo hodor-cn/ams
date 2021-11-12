@@ -10,11 +10,11 @@
 注意要先引入vue element-ui的依赖
 
 ```html
-<script src="https://h5rsc.vipstatic.com/ams/ams@0.7.16.js"></script>
+<script src="https://h5rsc.vipstatic.com/ams/ams@0.32.0.js"></script>
 ```
 
 
-# 开始使用
+## 开始使用
 
 
 然后就可以通过`ams.block`传入配置生成后台，下面是完整代码
@@ -42,7 +42,7 @@ var config = {
             api: {
                 // api前缀
                 prefix:
-                    '//rap2api.taobao.org/app/mock/231578/ams/mock/',
+                    '//www.yournana.club/vipshop/',
                 // 读取数据接口
                 read: 'read',
                 // 更新数据接口

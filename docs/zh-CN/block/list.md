@@ -55,6 +55,8 @@ List: List 列表
 
 如果没有配置会使用同名 `field` 的 `props.options` 配置，如果都没有filter配置会失效
 
+若配置`props['pagination']: 'simulate'`的纯前端分页，也支持排序
+
 <ClientOnly>
 <block-list-demo blockName="filtersList" onlineDemo="https://codepen.io/w3cmark/pen/zYOLmPO"/>
 </ClientOnly>
@@ -64,8 +66,7 @@ List: List 列表
 ::: tip
 注意：在 `ams@0.5.0` 以前的版本是通过配置 `searchs` 和 `searchsOptions` 实现的搜索配置，`0.5.0+` 使用新的`operations` + `slot` 实现列表的搜索和多选配置（0.5.0-0.6.0 会兼容searchs和searchsOptions，将在0.6.0+移除兼容支持）
 :::
-
-通过配置`slot`为`searchs`可以配置搜索条件，`operations` 配置参考：[operations配置](../api/operation.md)
+通过配置`slot`为`searchs`可以配置搜索条件，`operations` 配置参考：[operations配置](./deep-operation.md)
 
 <ClientOnly>
 <block-list-demo blockName="searchsList" onlineDemo="https://codepen.io/w3cmark/pen/YzKjJEN"/>
@@ -73,7 +74,7 @@ List: List 列表
 
 ### 多选操作配置 <Badge text="0.5.0+"/>
 
-通过配置list 的 `options.multipleSelect` 为 `true` 时可让列表出现多选按钮，配置 `slot` 为 `multipleSelect` 可以配置多选后出现的操作（多选操作只有在选择了至少一行后才会出现），`operations` 配置参考：[operations配置](../api/operation.md)
+通过配置list 的 `options.multipleSelect` 为 `true` 时可让列表出现多选按钮，配置 `slot` 为 `multipleSelect` 可以配置多选后出现的操作（多选操作只有在选择了至少一行后才会出现），`operations` 配置参考：[operations配置](./deep-operation.md)
 
 <ClientOnly>
 <block-list-demo blockName="multipleSelectList" onlineDemo="https://codepen.io/w3cmark/pen/wvwxYPm"/>
@@ -91,6 +92,8 @@ List: List 列表
 </ClientOnly>
 
 ### 列表每行操作项
+
+可以通过 `props['operations-width']: 200` 来设置操作项那列的宽度。
 
 <ClientOnly>
 <block-list-demo blockName="operationsList" onlineDemo="https://codepen.io/w3cmark/pen/JjPBmMG"/>
@@ -118,4 +121,28 @@ List: List 列表
 
 <ClientOnly>
 <block-list-demo blockName="editList2" onlineDemo="https://codepen.io/w3cmark/pen/BaBPqJr"/>
+</ClientOnly>
+
+### 列表展开表单详细
+
++ 可通过配置 block.expand 来控制需要展示的表单项(即内部field)，0.18.5+支持
+
+<ClientOnly>
+<block-list-demo blockName="expandList" />
+</ClientOnly>
+
+### 列表支持拖拽
+
++ 通过配置list 的 `options.drag` 为 `true` 让列表支持拖拽，可以在 `on.drag-start` 和 `on.drag-end` 事件中监听列表拖拽开始和拖拽结束回调，拖拽完成后会自动更新列表data.list数据顺序，拖拽的位置为默认icon位置拖拽，可通过对指定字段field配置`props['class-name']` 为 `drag-column`实行指定字段(列)的拖拽, 也可配置`options.showDragIcon` 为 `false`隐藏拖拽icon
+
+<ClientOnly>
+<block-list-demo blockName="dragList" />
+</ClientOnly>
+
+### 列表操作项带标记
+
++ 通过配置opearations，该配置为operations提供，0.17.12+支持
+
+<ClientOnly>
+<block-list-demo blockName="opearationsList" />
 </ClientOnly>

@@ -1,9 +1,309 @@
 // 更新日志
 export default [
     {
-        version: '0.17.7',
-        date: '2019.09.24',
+        version: '0.32.1',
+        date: '2020.06.03',
         log: [
+            'feat: 设置add/editDialogDrawer 默认为 append-to-body',
+            'feat: 添加addItemDrawer和editItemDrawer配置',
+            'feat: 点击删除的时候，显示弹窗进行二次确认',
+            'feat: text增加tooltip配置',
+            'feat: multiple的operation增加allowNoSelect配置',
+            'feat: list增加表头管理',
+            'fix: 修复表头管理设置后operation错乱，先请空触发渲染；增加缓存字段跟resource对比',
+            'fix: 修复远程搜索再设置了isInitEmpty:true情况下，设置额外传参报错问题',
+            'fix: 更改列表区块的total赋值逻辑'
+        ]
+    },
+    {
+        version: '0.31.3',
+        date: '2020.04.26',
+        log: [
+            'feat: 添加block-alert类型',
+            'feat: field-tag 增加 no-match-text 配置下，搜索无数据时可显示相关信息',
+            'fix: 修复field-tag一些搜索异常场景'
+        ]
+    },
+    {
+        version: '0.30.5',
+        date: '2020.04.01',
+        log: [
+            'fix: block-xlsx导入配置post方式时，支持用data来传参',
+            'feat: field-editor富文本自定义字段，支持 Quilljs 参数配置和事件绑定',
+            'feat: 完善富文本编辑器示例',
+            'refactor: 调整富文本字段 options 的入参方式',
+            'fix: 图片字段，在图片校验通过时，没有 resolve',
+            'fix: 远程搜索传参',
+            'feat: issue#77 导航的 Logo 和标题支持点击跳转',
+            'feat: ams.configs增加consoleWarn的全局配置',
+            'fix:issue#79 修复远程 SELECT 字段在接口返回异常时没有重置下拉列表的问题'
+        ]
+    },
+    {
+        version: '0.29.11',
+        date: '2020.02.23',
+        log: [
+
+            'fix: 修复block的show配置在router切换下异常',
+            'feat: select远程搜索的remoteConfig支持method和url的配置',
+            'fix: router区块增加loading',
+            'feat: 更新element-ui版本到2.14.1，增加popconfirm组件',
+            'feat: 更换chart区块的颜色序列',
+            'fix: break-change，resource中的默认contentType修改为form',
+            'fix: 配置responseDataParse时，不覆盖data之前配置的数据',
+            'feat: xlsx区块的上传，增加on.getXlsxData方法',
+            'feat: list曲表增加table-column配置',
+            'fix: 增强list中格式的校验',
+            'feat: 默认action增加clear',
+            'feat: list区块增加multipleSelectAffixShow配置',
+            'fix: operations-mixin兼容block-list中配置multipleSelectAffixShow: true的情况',
+            'fix： xlsx导入限制修复',
+            'feat: list的block支持配置hidden和show'
+        ]
+    },
+    {
+        version: '0.28.7',
+        date: '2020.01.08',
+        log: [
+            'feat: select支持分组',
+            'feat: 新增视频字段实例',
+            'feat: 视频字段在展示场景支持倍速控制',
+            'refactor: 视频字段展示场景下，控制是否展示出视频操作判断保护',
+            'fix: 修复视频字段和播放控制之间的间隙问题',
+            'feat: update的action增加put处理',
+            'feat: 优化左侧菜单 UI，使其和页头 UI 联调更协调',
+            'feat: 菜单支持入参 `hide-timeout` 参数',
+            'fix: resource中的update配置，method配置失效问题',
+            'fix: @list中的method默认设置为get'
+        ]
+    },
+    {
+        version: '0.28.0',
+        date: '2020.12.23',
+        log: [
+            'fix:  `inputnumber` 字段忽略了设置为 0 时的场景',
+            'feat: 新增处理上传视频中，Element UI 的 `on-error` 事件',
+            'feat: 将上传视频成功流程里的 this.field 调整为 this 和 transform 的一致',
+            'feat: `table`组件支持height配置',
+        ]
+    },
+    {
+        version: '0.27.17',
+        date: '2020.12.17',
+        log: [
+            'fix: `video`上传的 on-error 事件无法执行清空操作',
+            'fix: `video`上传失败时清空选项',
+            'feat: `table`组件暴露border设置',
+            'fix: ESLint，数字类型变量不能指派给字符串类型',
+            'feat: `ams.request`formData 场景支持入参 Blob 格式',
+            'fix: 修复默认action自定义配置无传method时，传参异常问题',
+            'feat: `ams.request`增加responseType',
+        ]
+    },
+    {
+        version: '0.27.9',
+        date: '2020.11.26',
+        log: [
+            'feat: form区块支持changeConfig配置',
+            'fix: 修复list区块在前端分页下，不触发current-change事件问题',
+            'feat: 更正block-chart的颜色分布',
+            'fix: 内置的用户信息区块和 ELEMENT UI 框架中图片放大功能的样式冲突',
+            'feat: 默认@list的action中，将requestDataParse的处理参数改为res.data',
+            'feat: 默认@list的action中，将responseDataParse处理范围从data.list变更为data',
+            'feat: 简化operaions中自定义field的配置',
+            'feat: operations增加changeConfig配置',
+            'feat: 列表拖动功能支持根据 SortableJS 官方文档配置参数',
+            'fix: 修正列表拖拽某列的使用方法'
+        ]
+    },
+    {
+        version: '0.26.3',
+        date: '2020.09.17',
+        log: [
+            'feat: 资源的api请求配置，新增requestDataParse和responseDataParse',
+            'feat: 图片编辑可选图片场，供可选的列表图片接入 el-image 来实现 fit 入参',
+            'fix: 图片编辑单张图片预览场景接入 el-image 组件用以实现 fit 入参',
+            'fix: field的default值初始化处理',
+            'feat: 对field default值也进行get/set处理'
+        ]
+    },
+    {
+        version: '0.25.39',
+        date: '2020.07.29',
+        log: [
+            'feat: 修复列表区块操作中，最后一项操作表的居中问题',
+            'feat: 更新collpase和imagelist的样式',
+            'feat: 新增多种类型的icon',
+            'feat: list区块请求时禁止分页操作',
+            'feat: unitselect字段增加on.change回调',
+            'feat: list区块增加前端排序',
+            'feat: field-audio、field-image、field-video支持在props配置before-upload回调',
+            'feat: table组件支持tableTop的插槽',
+            'feat: list组件，前端分页时，点击排序请求接口',
+            'feat:  前端分页时，点击排序触发fieldChange',
+            'feat: object增加collapseKeys配置',
+            'feat: 字段button增加emitFieldChange配置，可手动触发fieldChange方法',
+            'feat: operation添加info支持',
+            'feat: 远程搜索组件添加onSuccess和onError的回调方法',
+            'fix: table组件添加context参数',
+            'feat: 补全list区块的props配置',
+            'feat: 内置action的read中，添加tansform配置',
+            'feat: 内置的action支持配置path/method/successCode/transform',
+            'feat: resource增加method的配置',
+            'feat: table组件支持配置data.layout',
+            'feat: changeConfig增加第三个参数透传this',
+            'feat: router增加showTimeout配置',
+            'fix: 修复block-xlsx当code不等于0，msg不为array的情况',
+            'feat: block-xlsx@0.8.8，导入的request支持withCredentials、contentType、headers、successCode的配置',
+            'fix: list组件的列支持配置min-width',
+            'feat: text-view增加suffix-icon配置',
+            'fix: options选项多时的popover交互修改'
+        ]
+    },
+    {
+        version: '0.24.22',
+        date: '2020.04.23',
+        log: [
+            'feat: 更新字体图标',
+            'feat: field-iamge的successCode支持porps配置',
+            'feat: 增加列表配置项enterkey-search，配置为true时阻止列表搜索栏的回车搜索事件。场景：某些field类型为textarea时，默认回车时会发起搜索',
+            'feat: block的配置增加水印功能',
+            'feat: 通过ams-cli初始化的项目默认使用vishop的主题',
+            'fixed: block-steps支持description和props',
+            'fixed: datetime和datetime选择1970年部分月份时，值置空问题',
+            'fixed: field-array的删除按钮层级问题,',
+            'feat: field.info支持object配置，可以配置icon类型；',
+            'feat: 默认的几个action增加成功回调逻辑',
+            'feat：列表区块，改变页妈和页数时，增加on事件',
+            'feat: block-title增加append的slot插槽；',
+            'feat: 增加block-popover文档',
+            'feat: field-audio、field-image、field-video支持成功回调（on-success）和失败回调（on-error）',
+            'feat：支持所有block调用@show@hide进行显隐操作',
+            'feat: field-audio、field-video和field-file支持通过props配置successCode',
+            'fix: SELECT_REMOTE里的remoteMethod，在判断successCode是否配置的bug',
+            'fix：补充field的默认参数的时候，不覆盖默认参数',
+            'fix: 修复block-list的hidden失效',
+            'fix：字段类型为select，对外使用的view钩子中，加上context的参数',
+            "fix: block-list的options.operationsWidth改成props['operations-width']",
+            'fix：checkbox等进行全选操作时，加上change回调',
+            'feat: ams-cli@0.8.3：模板增加打包配置css.extract，解决打包后样式覆盖问题；npmComplete模板，修复全局结果拦截器responseInterceptor的返回promise的bug',
+            'feat: block-form支持配置label加粗样式；field-file、field-audio、field-video的上传按钮支持disabled属性配置',
+            'feat: 给array字段增加sortable配置，默认为true',
+            'feat: 区块table增加索引配置',
+            'fix: 修复编辑态的列表block在前端分页情况下，path路径问题',
+            'fix: 修复parseTime中时间格式化异常'
+        ]
+    },
+    {
+        version: '0.23.5',
+        date: '2020.01.08',
+        log: [
+            'feat: field增加html渲染字段',
+            'feat: 列表字段添加desc属性',
+            'fix: 修复导入获取rows的范围',
+            'feat: 文档增加自助仪表盘入口',
+            'feat: docs增加ams-helper介绍',
+            'fix: 修复datetime和datetime选择1970年部分月份时，值变空问题',
+            'feat: 更新字体图标，增加ams-icon-code',
+            'feat: block-steps支持description和props',
+            'fix: 修复field-array的删除按钮层级问题',
+            'feat: field-image的successCode支持props定义'
+        ]
+    },
+    {
+        version: '0.22.9',
+        date: '2019.12.14',
+        log: [
+            'feat: text的view组件添加on事件',
+            'feat: theme-vipshop主题修改',
+            'feat: block-list的操作按钮context增加数据index',
+            'feat: block-imagelist增加显示角标信息',
+            'feat: 添加nav-left插槽',
+            'feat: 新增drawer抽屉block',
+            'feat: array-simple数据更换'
+        ]
+    },
+    {
+        version: '0.21.6',
+        date: '2019.12.3',
+        log: [
+            'feat: text的view组件添加on事件',
+            'feat: theme-vipshop主题修改',
+            'feat: block-list的操作按钮context增加数据index',
+            'feat: block-imagelist增加显示角标信息',
+            'feat: 添加nav-left插槽',
+            'feat: 新增drawer抽屉block',
+            'feat: array-simple数据更换',
+            'fix: field-image兼容接口通过data直接返回图片地址的情况',
+            'fix: 修复block-list的表头操作栏样式问题',
+            'fix: field-image删除previewUrl'
+        ]
+    },
+    {
+        version: '0.20.10',
+        date: '2019.11.18',
+        log: [
+            'feat：增加事件销毁机制，tabs增加监听resize事件',
+            'feat：block-chart添加loading',
+            'feat: block-imagelist增加支持插入分类名称和隐藏标题信息块',
+            'feat: operations支持配置换行展示',
+            'feat: 增加block默认data机制',
+            'feat: 把field-headimage整合到field-image，并删除field-headimage',
+            'feat: block-card、block-component、block-dialog、block-imagelist、block-tabs增加loading效果，可以在该区块的action通过this.showLoading和this.hideLoading来控制',
+            'feat: 增加图标ams-icon-user',
+            'fix: 修复field-select在view状态下，无法匹配值为空的选项',
+            'fix: block-chart的图例icon设置为默认图标',
+            'fix: block-imagelist支持搜索换行',
+            'fix: block-grid兼容低级浏览器',
+            'fix: block-imagelist标题块高度不一致、删除title逻辑判断',
+            'fix: 路由菜单样式',
+            'fix: fieldChange无法获取不在资源声明的field的name',
+            'fix: 修复列表在有操作按钮的时候，行距过高的问题'
+        ]
+    },
+    {
+        version: '0.19.8',
+        date: '2019.11.5',
+        log: [
+            'feat: link增加上下文数据',
+            'feat: block增加beforeDestroy声明周期',
+            'feat: 优化列表拖拽',
+            'feat: 列表分页组件布局支持自定义',
+            'feat: vipshop主题的带导航菜单支持顶部栏',
+            'feat: field添加button类型，提取operation的tooltip和badge',
+            'feat: array/object field补全上下文',
+            'feat: block-title的标题支持html',
+            'feat: field的labelWidth为0时，不显示label',
+            'feat: color添加文字框',
+            'feat: block-title支持suffix-info消息提示',
+            'feat: 新增icon：ams-icon-xinxitishiwenhao，fixed设置size时operations的label错位',
+            'fix: 修复block-list展开无法配置label宽度',
+            'fix: 修复field-file的before-upload无法覆盖问题'
+        ]
+    },
+    {
+        version: '0.18.6',
+        date: '2019.10.16',
+        log: [
+            'feat: 扩展列表行展开为表单展示',
+            'fix: 列表高度自适应',
+            'fix: 删除block-chart的base默认样式配置，解决主题无法生效问题',
+            'fix: field-select远程搜索isInitRemoteOptions的逻辑',
+            'fix: 恢复block的operations修改',
+            'fix: block-list和block-imagelist绑定block.props',
+            'fix: 动态添加collapse'
+        ]
+    },
+    {
+        version: '0.17.12',
+        date: '2019.09.30',
+        log: [
+            'feat: 列表支持拖拽',
+            'feat: 添加sortable@1.10.0cdn文件',
+            'feat: block-image-label添加eidt和view状态',
+            'feat: 按钮添加Badge标记',
+            'feat: 新增uniqueOpened菜单只保持一个子菜单展开',
+            'feat: 新增定制区块block-image-label',
             'feat: 路由添加class类名控制',
             'feat: 更新block-bct-progress排版',
             'feat: field-checkbox添加button类型',
@@ -14,6 +314,7 @@ export default [
             'feat: field支持通过props.class配置该field的样式名，比如只想通过样式添加一个红色星号',
             'feat: 新增block-popover区块组件',
             'feat: field-checkbox字段配置select-all属性实现全选',
+            'fix：解决11~12位的时间戳转为为日期异常',
             'fix: checkbox-button样式优化',
             'fix: field-image从默认列表里选择图片后还校验失败的问题',
             'fix: operation的点击阻止事件冒泡',

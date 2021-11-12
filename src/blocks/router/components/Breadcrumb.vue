@@ -4,7 +4,7 @@
                    separator="/">
         <transition-group name="breadcrumb">
             <el-breadcrumb-item v-for="(item, index) in levelList" :key="'key' + index">
-                <span v-if="(levelList.length > 1 && index == levelList.length - 1) || (!item.block && !item.redirect) || item.meta.noRedirect"
+                <span v-if="(levelList.length > 1 && index === levelList.length - 1) || (!item.block && !item.component && !item.redirect) || item.meta.noRedirect"
                       class="no-redirect">{{ item.name }}</span>
                 <router-link v-else
                              :to="item.redirect || item.meta.path">{{ item.name }}</router-link>
@@ -55,11 +55,15 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-.app-breadcrumb.el-breadcrumb {
-    display: inline-block;
+.app-breadcrumb {
     font-size: 14px;
     line-height: 50px;
-    margin-left: 10px;
+    padding-left: 15px;
+    transition: margin-left 0.28s;
+    position: absolute;
+    top: 0;
+    left: 50px;
+    z-index: 2;
     .no-redirect {
         color: #97a8be;
         cursor: text;

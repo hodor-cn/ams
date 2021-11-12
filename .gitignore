@@ -14,8 +14,9 @@ package-lock.json
 *.sln
 
 /dist
+/lib
 /docs/dist
 /packages/*/lib
 /material-list.json
 /test/_coverage
-.scannerwork/
+/plugins/vscode/*.vsix
